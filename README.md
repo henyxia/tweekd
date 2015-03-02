@@ -1,2 +1,2 @@
 # tweekd
-Tweekd is a projet of an automated coffee dispenser
+Tweekd is a project of an automated coffee dispenser

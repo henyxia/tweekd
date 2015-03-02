@@ -1,17 +1,10 @@
 #include <stdio.h>
-#include <version.h>
-#include <transfer.h>
+#include "printx.h"
 
 int main(void)
 {
-	printf("Tweekd starting\n");
-	if(initializeProxmark() != 0)
-	{
-		printf("Initialization failed\n");
-		return 1;
-	}
-	printf("[NFC]\t: HW version\n");
-	proxVersion();
-	stopProxmark();
+	initLog();
+	printx(INFO, "Tweekd starting\n");
+	closeLog();
 	return 0;
 }
