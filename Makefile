@@ -1,6 +1,6 @@
 CC=gcc
-CC_FLAGS=-c -Wall -Werror -std=c99 -g
-CC_LIBS=
+CC_FLAGS=-c -Wall -Werror -std=gnu99 -g
+CC_LIBS=-pthread
 INCLUDES=
 
 SOURCES=main.c printx.c ui.c
