@@ -1,9 +1,9 @@
 CC=gcc
-CC_FLAGS=-c -Wall -Werror
+CC_FLAGS=-c -Wall -Werror -std=c99 -g
 CC_LIBS=
 INCLUDES=
 
-SOURCES=main.c printx.c
+SOURCES=main.c printx.c ui.c
 OBJECTS=$(SOURCES:.c=.o)
 OUTPUT=tweekd
 
