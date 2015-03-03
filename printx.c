@@ -50,13 +50,13 @@ void closeLog()
 
 void printx(severity s, char* str, ...)
 {
-	char	buffer[MAX_BUFFER];
+	char	buffer1[MAX_BUFFER];
 	char	buffer2[MAX_BUFFER];
 	va_list	arglist;
 	va_start(arglist, str);
-	vsprintf(buffer, str, arglist);
-	fprintf(logfile, buffer);
-	sprintf(buffer2, "%s%s%s", s_color[s], buffer, S_RESET);
+	vsprintf(buffer1, str, arglist);
+	fprintf(logfile, buffer1);
+	sprintf(buffer2, "%s%s%s", s_color[s], buffer1, S_RESET);
 	removeCharFromString('\n', buffer2);
 	addToLog(buffer2);
 	va_end(arglist);

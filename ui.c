@@ -11,9 +11,8 @@
 #define	LOG_LENGTH			69
 #define	IPS					20
 #define	SCREEN_TIME			1000000/IPS
+#define	SPACES				"                                                                                                                                                                                                                                                                  "
 
-char	tmpretheader[HEADER_TEXT_LENGTH+1];
-char	tmpretlog[HEADER_TEXT_LENGTH+1];
 char	uilog[LOG_LINES][LOG_LENGTH];
 char	started[TIME_LENGTH];
 char	uid[HEADER_TEXT_LENGTH];
@@ -34,8 +33,6 @@ void* drawUI(void* we)
 
 void initUILog()
 {
-	tmpretheader[0]='\0';
-	tmpretlog[0]='\0';
 	started[0]='\0';
 	mainPid = getpid();
 	uid[0]='\0';
@@ -44,13 +41,18 @@ void initUILog()
 		uilog[i][0] = '\0';
 }
 
-char* fillHeaderWithSpaces(char* text)
+char* fillHeaderWithSpaces(char* buf, char* text)
 {
+	char tmpretheader[HEADER_TEXT_LENGTH+1];
 	strcpy(tmpretheader, text);
 	while(strlen(tmpretheader) < HEADER_TEXT_LENGTH)
 		strcat(tmpretheader, " ");
 
-	return tmpretheader;
+	for(int i=0; i<strlen(tmpretheader); i++)
+		buf[i] = tmpretheader[i];
+	buf[strlen(tmpretheader)] = '\0';
+
+	return buf;
 }
 
 void addToLog(char* newStr)
@@ -60,9 +62,11 @@ void addToLog(char* newStr)
 	strcpy(uilog[0], newStr);
 }
 
-char* fillLogWithSpaces(char* text)
+char* fillLogWithSpaces(char* buf, char* text)
 {
-	strcpy(tmpretlog, text);
+/*
+	char tmpretlog[LOG_LENGTH];
+	strncpy(tmpretlog, text, LOG_LENGTH);
 	if(strlen(text) > 0)
 		while((strlen(tmpretlog)-12) < LOG_LENGTH)
 			strcat(tmpretlog, " ");
@@ -70,7 +74,25 @@ char* fillLogWithSpaces(char* text)
 		while(strlen(tmpretlog) < LOG_LENGTH)
 			strcat(tmpretlog, " ");
 
-	return tmpretlog;
+//	int j;
+//	printf("J val\n");
+//	printf("%d\n", j);
+	for(int j=0; j<strlen(tmpretlog); j++)
+		buf[j] = tmpretlog[j];
+	buf[strlen(tmpretlog)] = '\0';
+*/
+	strncpy(buf, text, LOG_LENGTH);
+	/*
+	if(strlen(buf) > 0)
+		while((strlen(buf)-12) < LOG_LENGTH)
+			strcat(buf, " ");
+	else
+		while(strlen(buf) < LOG_LENGTH)
+			strcat(buf, " ");
+	*/
+	//strncat(buf, SPACES, LOG_LENGTH-strlen(buf));
+
+	return buf;
 }
 
 
@@ -81,21 +103,25 @@ void setStartTime(char* sT)
 
 void displayUI()
 {
-	char	buffer[HEADER_TEXT_LENGTH];
+	char	buffer[LOG_LENGTH];
 	//header
 	printf("\u250F\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2533\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2533\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2513\n");
-	printf("\u2503 %s \u2503      T H E      \u2503", fillHeaderWithSpaces("Started since"));
-   	printf(" %s \u2503\n", fillHeaderWithSpaces("No Tag Detected"));
-	printf("\u2503 %s \u2503    T W E E K    \u2503 ", fillHeaderWithSpaces(started));
+	printf("\u2503 %s \u2503      T H E      \u2503", fillHeaderWithSpaces(buffer, "Started since"));
+   	printf(" %s \u2503\n", fillHeaderWithSpaces(buffer, "No Tag Detected"));
+	printf("\u2503 %s \u2503    T W E E K    \u2503 ", fillHeaderWithSpaces(buffer, started));
 	sprintf(buffer, "%s", strlen(uidDate) > 0 ? uidDate : "Waiting for a tag");
-	printf("%s \u2503\n", fillHeaderWithSpaces(buffer));
+	printf("%s \u2503\n", fillHeaderWithSpaces(buffer, buffer));
 	sprintf(buffer, "PID %d", mainPid);
-	printf("\u2503 %s \u2503  P R O J E C T  \u2503 ", fillHeaderWithSpaces(buffer));
+	printf("\u2503 %s \u2503  P R O J E C T  \u2503 ", fillHeaderWithSpaces(buffer, buffer));
 	sprintf(buffer, "UID : %s", strlen(uid) > 0 ? uid : "Nope");
-	printf("%s \u2503\n", fillHeaderWithSpaces(buffer));
-	printf("\u2523\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u253B\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u253B\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u252B\n");
+	printf("%s \u2503\n", fillHeaderWithSpaces(buffer, buffer));
+	printf("\u2522\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u253B\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u253B\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u252B\n");
 	//body
-	for(int i=0; i<LOG_LINES; i++)
-		printf("\u2503 %s \u2503\n", fillLogWithSpaces(uilog[LOG_LINES-i-1]));
+	int i=0;
+	while(i<LOG_LINES)
+	{
+		printf("\u2503 %s \u2503\n", fillLogWithSpaces(buffer, uilog[LOG_LINES-i-1]));
+		i++;
+	}
 	printf("\u2517\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u251B\n");
 }
