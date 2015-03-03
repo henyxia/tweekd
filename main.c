@@ -15,12 +15,12 @@ int main(void)
 		printf("Log creation failed\n");
 		return 1;
 	}
-	printx(INFO, "Tweekd starting\n");
-	printx(DEBUG, "Creating processes\n");
+	printx(INFO, MAIN, "Tweekd starting\n");
+	printx(DEBUG, MAIN, "Creating processes\n");
 	displayUI();
 	ret = pthread_create(&tUI, NULL, drawUI, NULL);
-	printx(DEBUG, "UI Started ID %08x ret %d\n", tUI, ret);
-	printx(INFO, "Initializing NFC");
+	printx(DEBUG, MAIN, "UI Started ID %08x ret %d\n", tUI, ret);
+	printx(INFO, MAIN, "Initializing NFC");
 	//pthread_create(&tNFC, NULL, 
 	pthread_join(tUI, NULL);
 	closeLog();

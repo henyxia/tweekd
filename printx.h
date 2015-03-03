@@ -8,8 +8,13 @@ typedef enum
 	ERROR, WARNING, INFO, DEBUG
 }severity;
 
+typedef enum
+{
+	MAIN, UI, NFC, HVC, BUS
+}msgfrom;
+
 bool initLog();
-void printx(severity, char*, ...);
+void printx(severity, msgfrom, char*, ...);
 void closeLog();
 
 #endif

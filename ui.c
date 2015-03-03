@@ -8,7 +8,7 @@
 #define	TIME_LENGTH			24
 #define	HEADER_TEXT_LENGTH	24
 #define	LOG_LINES			25
-#define	LOG_LENGTH			69
+#define	LOG_LENGTH			82
 #define	IPS					20
 #define	SCREEN_TIME			1000000/IPS
 #define	SPACES				"                                                                                                                                                                                                                                                                  "
@@ -64,33 +64,11 @@ void addToLog(char* newStr)
 
 char* fillLogWithSpaces(char* buf, char* text)
 {
-/*
-	char tmpretlog[LOG_LENGTH];
-	strncpy(tmpretlog, text, LOG_LENGTH);
-	if(strlen(text) > 0)
-		while((strlen(tmpretlog)-12) < LOG_LENGTH)
-			strcat(tmpretlog, " ");
-	else
-		while(strlen(tmpretlog) < LOG_LENGTH)
-			strcat(tmpretlog, " ");
-
-//	int j;
-//	printf("J val\n");
-//	printf("%d\n", j);
-	for(int j=0; j<strlen(tmpretlog); j++)
-		buf[j] = tmpretlog[j];
-	buf[strlen(tmpretlog)] = '\0';
-*/
 	strncpy(buf, text, LOG_LENGTH);
-	/*
 	if(strlen(buf) > 0)
-		while((strlen(buf)-12) < LOG_LENGTH)
-			strcat(buf, " ");
+		strncat(buf, SPACES, LOG_LENGTH-strlen(buf)-1);
 	else
-		while(strlen(buf) < LOG_LENGTH)
-			strcat(buf, " ");
-	*/
-	//strncat(buf, SPACES, LOG_LENGTH-strlen(buf));
+		strncat(buf, SPACES, LOG_LENGTH-strlen(buf)-1-12);
 
 	return buf;
 }
