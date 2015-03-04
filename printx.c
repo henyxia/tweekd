@@ -57,7 +57,8 @@ void printx(severity s, msgfrom from, char* str, ...)
 	va_start(arglist, str);
 	vsprintf(buffer1, str, arglist);
 	fprintf(logfile, buffer1);
-	sprintf(buffer2, "[%s] : %s%s%s", f_name[from], s_color[s], buffer1, S_RESET);
+	fflush(logfile);
+	sprintf(buffer2, "[%s] %s%s%s", f_name[from], s_color[s], buffer1, S_RESET);
 	removeCharFromString('\n', buffer2);
 	addToLog(buffer2);
 	va_end(arglist);

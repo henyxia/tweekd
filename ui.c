@@ -7,7 +7,7 @@
 
 #define	TIME_LENGTH			24
 #define	HEADER_TEXT_LENGTH	24
-#define	LOG_LINES			25
+#define	LOG_LINES			35
 #define	LOG_LENGTH			82
 #define	IPS					20
 #define	SCREEN_TIME			1000000/IPS
@@ -29,6 +29,13 @@ void* drawUI(void* we)
 	}
 
 	return NULL;
+}
+
+void setTagName(char* tag)
+{
+	time_t now = time(NULL);
+	strcpy(uid, tag);
+	strftime(uidDate, HEADER_TEXT_LENGTH, "%F-%T:%d", localtime(&now));
 }
 
 void initUILog()
@@ -85,10 +92,10 @@ void displayUI()
 	//header
 	printf("\u250F\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2533\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2533\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2513\n");
 	printf("\u2503 %s \u2503      T H E      \u2503", fillHeaderWithSpaces(buffer, "Started since"));
-   	printf(" %s \u2503\n", fillHeaderWithSpaces(buffer, "No Tag Detected"));
-	printf("\u2503 %s \u2503    T W E E K    \u2503 ", fillHeaderWithSpaces(buffer, started));
 	sprintf(buffer, "%s", strlen(uidDate) > 0 ? uidDate : "Waiting for a tag");
-	printf("%s \u2503\n", fillHeaderWithSpaces(buffer, buffer));
+   	printf(" %s \u2503\n", fillHeaderWithSpaces(buffer, buffer));
+	printf("\u2503 %s \u2503    T W E E K    \u2503 ", fillHeaderWithSpaces(buffer, started));
+	printf("%s \u2503\n", fillHeaderWithSpaces(buffer, " "));
 	sprintf(buffer, "PID %d", mainPid);
 	printf("\u2503 %s \u2503  P R O J E C T  \u2503 ", fillHeaderWithSpaces(buffer, buffer));
 	sprintf(buffer, "UID : %s", strlen(uid) > 0 ? uid : "Nope");

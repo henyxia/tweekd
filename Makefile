@@ -3,7 +3,7 @@ CC_FLAGS=-c -Wall -Werror -std=gnu99 -g
 CC_LIBS=-pthread
 INCLUDES=
 
-SOURCES=main.c printx.c ui.c
+SOURCES=main.c printx.c ui.c nfc.c
 OBJECTS=$(SOURCES:.c=.o)
 OUTPUT=tweekd
 
