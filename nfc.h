@@ -5,5 +5,6 @@
 
 bool	initNFC();
 void*	processNFC();
+void	stopNFC();
 
 #endif

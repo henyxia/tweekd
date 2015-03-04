@@ -27,7 +27,7 @@
 
 // Globals
 int		serial_fd = -1;
-bool	stop = false;
+bool	nfcStop = false;
 struct	termios saveterm;
 
 bool init_serial(char* device, int speed)
@@ -59,6 +59,12 @@ void close_serial()
 {
 	tcsetattr(serial_fd,TCSANOW,&saveterm);
 	close(serial_fd);
+}
+
+void stopNFC()
+{
+	close_serial();
+	nfcStop = true;
 }
 
 unsigned char getData()
@@ -150,7 +156,7 @@ void* processNFC(void* we)
 	char myTag[NFC_TAG_LENGTH];
 	char buffer[NFC_TAG_LENGTH];
 
-	while(!stop)
+	while(!nfcStop)
 	{
 		printx(DEBUG, NFC, "Scanning for tags\n");
 		if(isTagPresent(buffer))

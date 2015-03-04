@@ -3,13 +3,14 @@
 #include "printx.h"
 #include "ui.h"
 #include "nfc.h"
+#include "bus.h"
 
 #include <unistd.h>
 
 int main(void)
 {
 	int ret;
-	pthread_t tUI, tNFC;//tHVC
+	pthread_t tUI, tNFC, tBUS;//tHVC
 	initUILog();
 	if(!initLog())
 	{
@@ -28,6 +29,12 @@ int main(void)
 		return 2;
 	}
 	pthread_create(&tNFC, NULL, processNFC, NULL);
+	if(!initBus())
+	{
+		printx(ERROR, MAIN, "Unable to start the BUS interface\n");
+		return 3;
+	}
+	pthread_create(&tBUS, NULL, processBus, NULL);
 	pthread_join(tUI, NULL);
 	closeLog();
 	return 0;

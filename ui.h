@@ -7,5 +7,6 @@ void	addToLog(char*);
 void	displayUI();
 void	setStartTime(char*);
 void	setTagName(char*);
+void	stopUI();
 
 #endif
