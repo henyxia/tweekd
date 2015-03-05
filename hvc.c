@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <strings.h>
 #include <inttypes.h>
+#include <time.h>
 #include "ui.h"
 #include "hvc.h"
 #include "printx.h"
@@ -33,6 +34,12 @@ bool	sHeat = false;
 struct	termios hvcSaveterm;
 bool	wHeat = false;
 bool	wPump = false;
+time_t	tHeatStart;
+time_t	tHeatStop;
+double	tHeatTimer;
+time_t	tPumpStart;
+double	tPumpTimer;
+time_t	tPumpStop;
 
 void stopHVC()
 {
@@ -41,12 +48,26 @@ void stopHVC()
 
 void setPumpWantedState(bool s)
 {
+	tPumpStart = clock();
+	tPumpStop = clock();
 	wPump = s;
 }
 
 void setHeatWantedState(bool s)
 {
+	tHeatStart = clock();
+	tHeatStop = clock();
 	wHeat = s;
+}
+
+void setPumpTimer(double t)
+{
+	tPumpTimer = t;
+}
+
+void setHeatTimer(double t)
+{
+	tHeatTimer = t;
 }
 
 bool initHVC()
@@ -84,11 +105,34 @@ void* processHVC(void* we)
 		data = getData(&hvc_fd);
 		setTemp(data);
 
+		if(tHeatTimer > 0)
+		{
+			tHeatStop = clock();
+			if(((double)(tHeatStop - tHeatStart) / CLOCKS_PER_SEC) > tHeatTimer)
+			{
+				wHeat = false;
+				tHeatTimer = 0;
+			}
+
+		}
+
+		if(tPumpTimer > 0)
+		{
+			tPumpStop = clock();
+			if(((double)(tPumpStop - tPumpStart) / CLOCKS_PER_SEC) > tPumpTimer)
+			{
+				wPump = false;
+				tPumpTimer = 0;
+			}
+		}
+
 		if(wHeat ^ sHeat)
 		{
 			sendData(&hvc_fd, wHeat ? SET_HEAT_ON : SET_HEAT_OFF);
 			sHeat = wHeat;
 			setHeat(sHeat);
+			if(sHeat)
+				tHeatStart = clock();
 		}
 
 		if(wPump ^ sPump)
@@ -96,6 +140,8 @@ void* processHVC(void* we)
 			sendData(&hvc_fd, wPump ? SET_PUMP_ON : SET_PUMP_OFF);
 			sPump = wPump;
 			setPump(sPump);
+			if(sPump)
+				tPumpStart = clock();
 		}
 
 		usleep(HVC_POLLING_TIME);

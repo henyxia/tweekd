@@ -8,5 +8,7 @@ void*	processHVC();
 void	stopHVC();
 void	setPumpWantedState(bool);
 void	setHeatWantedState(bool);
+void	setPumpTimer(double);
+void	setHeatTimer(double);
 
 #endif

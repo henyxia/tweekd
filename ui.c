@@ -195,6 +195,11 @@ void displayUI()
 			sprintf(buffer, "%c", bufferO[0]);
 			strcat(cmd, buffer);
 		}
+		else if(bufferO[0] >= 48 && bufferO[0] <= 57)
+		{
+			sprintf(buffer, "%c", bufferO[0]);
+			strcat(cmd, buffer);
+		}
 		else if(bufferO[0] == 32)
 		{
 			sprintf(buffer, "%c", bufferO[0]);
