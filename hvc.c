@@ -15,11 +15,15 @@
 
 #define	DEVICE1				"/dev/ttyACM1"
 #define	SPEED				B19200
-#define HVC_POLLING_TIME	500000
+#define HVC_POLLING_TIME	50000
 #define	WAIT_BEFORE_RETRY	5000
 #define	GET_DEVICE_MODEL	'A'
 #define	DEVICE_MODEL_HVC	'C'
 #define	GET_TEMP			'H'
+#define	SET_HEAT_ON			'E'
+#define	SET_HEAT_OFF		'G'
+#define	SET_PUMP_ON			'B'
+#define	SET_PUMP_OFF		'D'
 
 // Globals
 int		hvc_fd = -1;
@@ -27,6 +31,23 @@ bool	hvcStop = false;
 bool	sPump = false;
 bool	sHeat = false;
 struct	termios hvcSaveterm;
+bool	wHeat = false;
+bool	wPump = false;
+
+void stopHVC()
+{
+	hvcStop = true;
+}
+
+void setPumpWantedState(bool s)
+{
+	wPump = s;
+}
+
+void setHeatWantedState(bool s)
+{
+	wHeat = s;
+}
 
 bool initHVC()
 {
@@ -62,6 +83,20 @@ void* processHVC(void* we)
 		sendData(&hvc_fd, GET_TEMP);
 		data = getData(&hvc_fd);
 		setTemp(data);
+
+		if(wHeat ^ sHeat)
+		{
+			sendData(&hvc_fd, wHeat ? SET_HEAT_ON : SET_HEAT_OFF);
+			sHeat = wHeat;
+			setHeat(sHeat);
+		}
+
+		if(wPump ^ sPump)
+		{
+			sendData(&hvc_fd, wPump ? SET_PUMP_ON : SET_PUMP_OFF);
+			sPump = wPump;
+			setPump(sPump);
+		}
 
 		usleep(HVC_POLLING_TIME);
 	}

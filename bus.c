@@ -9,6 +9,7 @@
 #include "printx.h"
 #include "ui.h"
 #include "nfc.h"
+#include "hvc.h"
 
 #define	CMD_MAX	70
 
@@ -28,12 +29,32 @@ void processCmd(char* buffer)
 	{
 		printx(INFO, BUS, "Exit request receved, processing ...\n");
 		stopNFC();
-		//stopHVC();
+		stopHVC();
 		stopBus();
 		stopUI();
 	}
-	//else
-		//printx(DEBUG, BUS, "STRLEN : %d and strcmp ret %d", strlen(buffer), strcmp(buffer, "quit"));
+	else if(strcmp(buffer, "setpumpon") == 0)
+	{
+		printx(INFO, BUS, "Setting PUMP ON");
+		setPumpWantedState(true);
+	}
+	else if(strcmp(buffer, "setpumpoff") == 0)
+	{
+		printx(INFO, BUS, "Setting PUMP OFF");
+		setPumpWantedState(false);
+	}
+	else if(strcmp(buffer, "setheaton") == 0)
+	{
+		printx(INFO, BUS, "Setting HEAT ON");
+		setHeatWantedState(true);
+	}
+	else if(strcmp(buffer, "setheatoff") == 0)
+	{
+		printx(INFO, BUS, "Setting HEAT OFF");
+		setHeatWantedState(false);
+	}
+
+	//printx(DEBUG, BUS, "STRLEN : %d and strcmp ret %d", strlen(buffer), strcmp(buffer, "quit"));
 }
 
 void* processBus(void* we)

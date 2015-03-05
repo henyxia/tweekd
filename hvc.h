@@ -6,5 +6,7 @@
 bool	initHVC();
 void*	processHVC();
 void	stopHVC();
+void	setPumpWantedState(bool);
+void	setHeatWantedState(bool);
 
 #endif
