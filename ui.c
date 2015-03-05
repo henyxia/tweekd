@@ -34,6 +34,26 @@ void stopUI()
 	uiStop = true;
 }
 
+void setHeat(bool s)
+{
+	heat = s;
+}
+
+void setPump(bool s)
+{
+	pump = s;
+}
+
+void setTemp(unsigned int t)
+{
+	temp = t;
+}
+
+void setDebit(unsigned int d)
+{
+	debit = d;
+}
+
 void* drawUI(void* we)
 {
 	while(!uiStop)
@@ -150,7 +170,7 @@ void displayUI()
 	sprintf(buffer, "UID : %s", strlen(uid) > 0 ? uid : "Nope");
 	printf("%s \u2503\n", fillHeaderWithSpaces(buffer, buffer));
 	printf("\u2523\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u253B\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u253B\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u252B\n");
-	sprintf(buffer, "\u2503 HEAT[%s] %02d\u2103  PUMP[%s] %04d", heat ? "ON " : "OFF", temp, pump ? "ON " : "OFF", debit);
+	sprintf(buffer, "\u2503 HEAT[%s] %02d\u2103  PUMP[%s] %04d", heat ? "ON " : "OFF", temp+25, pump ? "ON " : "OFF", debit);
 	printf("%s  \u2503\n", fillStatusWithSpaces(buffer, buffer));
 	printf("\u2523\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u252B\n");
 	//body

@@ -4,13 +4,14 @@
 #include "ui.h"
 #include "nfc.h"
 #include "bus.h"
+#include "hvc.h"
 
 #include <unistd.h>
 
 int main(void)
 {
 	int ret;
-	pthread_t tUI, tNFC, tBUS;//tHVC
+	pthread_t tUI, tNFC, tBUS, tHVC;
 	initUILog();
 	if(!initLog())
 	{
@@ -35,6 +36,12 @@ int main(void)
 		return 3;
 	}
 	pthread_create(&tBUS, NULL, processBus, NULL);
+	if(!initHVC())
+	{
+		printx(ERROR, MAIN, "Unable to start the HVC interface\n");
+		return 4;
+	}
+	pthread_create(&tHVC, NULL, processHVC, NULL);
 	pthread_join(tUI, NULL);
 	closeLog();
 	return 0;

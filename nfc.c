@@ -11,11 +11,11 @@
 #include "ui.h"
 #include "nfc.h"
 #include "printx.h"
+#include "serial.h"
 
 #define	DEVICE1				"/dev/ttyACM0"
 #define	SPEED				B19200
 #define NFC_POLLING_TIME	500000
-#define	WAIT_BEFORE_RETRY	50000
 #define	NFC_TAG_LENGTH		9
 #define	GET_DEVICE_MODEL	'A'
 #define	DEVICE_MODEL_NFC	'B'
@@ -26,71 +26,20 @@
 #define	GET_TAG_DETAILS		'H'
 
 // Globals
-int		serial_fd = -1;
+int		nfc_fd = -1;
 bool	nfcStop = false;
 struct	termios saveterm;
-
-bool init_serial(char* device, int speed)
-{
-	struct termios new;
-
-	int fd=open(device,O_RDWR|O_NOCTTY|O_NONBLOCK);
-	
-	if(fd<0)
-		return false;
-
-	tcgetattr(fd,&saveterm); // save current port settings
-	bzero(&new,sizeof(new));
-	new.c_cflag=CLOCAL|CREAD|speed|CS8;
-	new.c_iflag=0;
-	new.c_oflag=0;
-	new.c_lflag=0;  // set input mode (non-canonical, no echo,...)
-	new.c_cc[VTIME]=0; // inter-character timer unused
-	new.c_cc[VMIN]=1; // blocking read until 1 char received
-	tcflush(fd, TCIFLUSH);
-	tcsetattr(fd,TCSANOW,&new);
-
-	serial_fd = fd;
-	sleep(2);
-	return true;
-}
-
-void close_serial()
-{
-	tcsetattr(serial_fd,TCSANOW,&saveterm);
-	close(serial_fd);
-}
-
-void stopNFC()
-{
-	close_serial();
-	nfcStop = true;
-}
-
-unsigned char getData()
-{
-	unsigned char buf;
-	while(read(serial_fd, &buf, 1) != 1)
-		usleep(WAIT_BEFORE_RETRY);
-		return buf;
-}
-
-void sendData(unsigned char data)
-{
-	while(write(serial_fd, &data, 1) != 1)
-		usleep(WAIT_BEFORE_RETRY);
-}
 
 bool initNFC()
 {
 	unsigned char data;
 	printx(DEBUG, NFC, "Connecting to interface 1\n");
-	if(init_serial(DEVICE1, SPEED))
+	if(init_serial(DEVICE1, SPEED, &nfc_fd, &saveterm))
 	{
 		printx(DEBUG, NFC, "Connected to an interface\n");
-		sendData(GET_DEVICE_MODEL);
+		sendData(&nfc_fd, GET_DEVICE_MODEL);
 		printx(DEBUG, NFC, "Sended identification request %02x\n", GET_DEVICE_MODEL);
-		data = getData();
+		data = getData(&nfc_fd);
 		if(data == DEVICE_MODEL_NFC)
 			printx(INFO, NFC, "NFC Arduino connected\n");
 		else
@@ -105,36 +54,42 @@ bool initNFC()
 	return true;
 }
 
+void stopNFC()
+{
+	close_serial(&nfc_fd, &saveterm);
+	nfcStop = true;
+}
+
 bool isTagPresent(char* tag)
 {
 	unsigned char data;
-	sendData(GET_NFC_STATUS);
-	data = getData();
+	sendData(&nfc_fd, GET_NFC_STATUS);
+	data = getData(&nfc_fd);
 	if(data == PROFESSOR_TAG)
 	{
-		sendData(GET_TAG_DETAILS);
+		sendData(&nfc_fd, GET_TAG_DETAILS);
 		printx(INFO, NFC, "Professor Tag Detected %02x\n", data);
-		return (read(serial_fd, tag, 6) == 6);
+		//return (read(serial_fd, tag, 6) == 6);
 	}
 	else if(data == STUDENT_TAG)
 	{
-		sendData(GET_TAG_DETAILS);
+		sendData(&nfc_fd, GET_TAG_DETAILS);
 		printx(INFO, NFC, "Student Tag Detected\n");
-		tag[0] = getData();
+		tag[0] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[0]);
-		tag[1] = getData();
+		tag[1] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[1]);
-		tag[2] = getData();
+		tag[2] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[2]);
-		tag[3] = getData();
+		tag[3] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[3]);
-		tag[4] = getData();
+		tag[4] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[4]);
-		tag[5] = getData();
+		tag[5] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[5]);
-		tag[6] = getData();
+		tag[6] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[6]);
-		tag[7] = getData();
+		tag[7] = getData(&nfc_fd);
 		printx(DEBUG, NFC, "Last read %02x\n", tag[7]);
 		return true;
 	}
@@ -148,7 +103,7 @@ bool isTagPresent(char* tag)
 		printx(DEBUG, NFC, "Read data did not matched with expected data %02x\n", data);
 		return false;
 	}
-	return true;
+	return false;
 }
 
 void* processNFC(void* we)
