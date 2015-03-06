@@ -104,7 +104,6 @@ void* processHVC(void* we)
 		sendData(&hvc_fd, GET_TEMP);
 		data = getData(&hvc_fd);
 		setTemp(data);
-		printx(DEBUG, HVC, "TEMP %d\n", data);
 
 		if(tHeatTimer > 0)
 		{
@@ -113,7 +112,6 @@ void* processHVC(void* we)
 			{
 				wHeat = false;
 				tHeatTimer = 0;
-				printx(INFO, HVC, "Shutting down HEAT according to timer\n");
 			}
 
 		}
@@ -125,7 +123,6 @@ void* processHVC(void* we)
 			{
 				wPump = false;
 				tPumpTimer = 0;
-				printx(INFO, HVC, "Shutting down PUMP according to timer\n");
 			}
 		}
 

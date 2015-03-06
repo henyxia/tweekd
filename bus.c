@@ -35,41 +35,35 @@ void processCmd(char* buffer)
 	}
 	else if(strcmp(buffer, "setpumpon") == 0)
 	{
-		printx(INFO, BUS, "Setting PUMP ON\n");
+		printx(INFO, BUS, "Setting PUMP ON");
 		setPumpWantedState(true);
 	}
 	else if(strcmp(buffer, "setpumpoff") == 0)
 	{
-		printx(INFO, BUS, "Setting PUMP OFF\n");
+		printx(INFO, BUS, "Setting PUMP OFF");
 		setPumpWantedState(false);
 	}
 	else if(strcmp(buffer, "setheaton") == 0)
 	{
-		printx(INFO, BUS, "Setting HEAT ON\n");
+		printx(INFO, BUS, "Setting HEAT ON");
 		setHeatWantedState(true);
 	}
 	else if(strcmp(buffer, "setheatoff") == 0)
 	{
-		printx(INFO, BUS, "Setting HEAT OFF\n");
+		printx(INFO, BUS, "Setting HEAT OFF");
 		setHeatWantedState(false);
 	}
 	else if(strcmp(buffer, "setheaton5s") == 0)
 	{
-		printx(INFO, BUS, "Setting HEAT ON for 5 secs\n");
+		printx(INFO, BUS, "Setting HEAT ON for 5 secs");
 		setHeatTimer(5);
 		setHeatWantedState(true);
 	}
 	else if(strcmp(buffer, "setpumpon5s") == 0)
 	{
-		printx(INFO, BUS, "Setting PUMP ON for 5 secs\n");
+		printx(INFO, BUS, "Setting PUMP ON for 5 secs");
 		setPumpTimer(5);
 		setPumpWantedState(true);
-	}
-	else if(strcmp(buffer, "setheaton35s") == 0)
-	{
-		printx(INFO, BUS, "Setting HEAT ON for 35 secs\n");
-		setHeatTimer(35);
-		setHeatWantedState(true);
 	}
 
 	//printx(DEBUG, BUS, "STRLEN : %d and strcmp ret %d", strlen(buffer), strcmp(buffer, "quit"));
@@ -87,8 +81,7 @@ void* processBus(void* we)
 		printx(DEBUG, BUS, "Event receved !\n");
 		busFree = false;
 		lseek(bus, 0, SEEK_SET);
-		read(bus, buffer, CMD_MAX);
-		//printx(DEBUG, BUS, "Data read %d\n", read(bus, buffer, CMD_MAX));
+		printx(DEBUG, BUS, "Data read %d\n", read(bus, buffer, CMD_MAX));
 		ftruncate(bus, 0);
 		sync();
 		processCmd(buffer);
