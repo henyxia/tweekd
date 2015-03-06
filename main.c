@@ -29,22 +29,19 @@ int main(void)
 		printx(ERROR, MAIN, "Unable to start the NFC interface\n");
 		return 2;
 	}
-	ret = pthread_create(&tNFC, NULL, processNFC, NULL);
-	printx(DEBUG, MAIN, "NFC Started ID %08x ret %d\n", tNFC, ret);
+	pthread_create(&tNFC, NULL, processNFC, NULL);
 	if(!initBus())
 	{
 		printx(ERROR, MAIN, "Unable to start the BUS interface\n");
 		return 3;
 	}
 	pthread_create(&tBUS, NULL, processBus, NULL);
-	printx(DEBUG, MAIN, "BUS Started ID %08x ret %d\n", tBUS, ret);
 	if(!initHVC())
 	{
 		printx(ERROR, MAIN, "Unable to start the HVC interface\n");
 		return 4;
 	}
 	pthread_create(&tHVC, NULL, processHVC, NULL);
-	printx(DEBUG, MAIN, "HVC Started ID %08x ret %d\n", tHVC, ret);
 	pthread_join(tUI, NULL);
 	closeLog();
 	return 0;
