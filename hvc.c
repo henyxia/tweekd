@@ -104,7 +104,7 @@ void* processHVC(void* we)
 		sendData(&hvc_fd, GET_TEMP);
 		data = getData(&hvc_fd);
 		setTemp(data);
-
+		printx(DEBUG, HVC, "TEMP %f\n", 25 + (((float)(80*data)))/255);
 		if(tHeatTimer > 0)
 		{
 			tHeatStop = clock();

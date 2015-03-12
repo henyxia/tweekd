@@ -59,6 +59,12 @@ void processCmd(char* buffer)
 		setHeatTimer(5);
 		setHeatWantedState(true);
 	}
+	else if(strcmp(buffer, "setheaton35s") == 0)
+	{
+		printx(INFO, BUS, "Setting HEAT ON for 10 secs");
+		setHeatTimer(10);
+		setHeatWantedState(true);
+	}
 	else if(strcmp(buffer, "setpumpon5s") == 0)
 	{
 		printx(INFO, BUS, "Setting PUMP ON for 5 secs");

@@ -14,6 +14,7 @@
 FILE* logfile = NULL;
 char s_color[4][12] = {"\x1b[01;31m", "\x1b[01;33m", "\x1b[01;32m", "\x1b[01;36m"};
 char f_name[5][5] = {"MAIN", "UI  ", "NFC ", "HVC ", "BUS "};
+float start;
 
 void removeCharFromString(char c, char *str)
 {
@@ -41,6 +42,8 @@ bool initLog()
 		return false;
 	}
 
+	start = clock();
+
 	return true;
 }
 
@@ -54,9 +57,10 @@ void printx(severity s, msgfrom from, char* str, ...)
 	char	buffer1[MAX_BUFFER];
 	char	buffer2[MAX_BUFFER];
 	va_list	arglist;
+	float	now = clock();
 	va_start(arglist, str);
 	vsprintf(buffer1, str, arglist);
-	fprintf(logfile, buffer1);
+	fprintf(logfile, "[%6f] : %s", (now - start)/CLOCKS_PER_SEC, buffer1);
 	fflush(logfile);
 	sprintf(buffer2, "[%s] %s%s%s", f_name[from], s_color[s], buffer1, S_RESET);
 	removeCharFromString('\n', buffer2);
