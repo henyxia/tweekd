@@ -6,16 +6,95 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
 #include "printx.h"
 #include "ui.h"
 #include "nfc.h"
 #include "hvc.h"
 
-#define	CMD_MAX	70
+#define	CMD_MAX		70
+#define KEY			1100
+#define	SEM_NUMBER	2
+#define	SEM_INPUT	0
+#define	SEM_OUTPUT	1
 
 int		bus;
 bool	busFree = true;
 bool	busStop = false;
+int		mySem;
+
+int get_sem(int i)
+{
+	ushort semarr[30];
+	union semun
+	{
+		int val;
+		struct semid_ds *buf;
+		ushort *array;
+	}arg;
+
+	arg.array = semarr;
+	semctl(mySem, i, GETALL, arg);
+	return semarr[i];
+}
+
+void show_sem(int i)
+{
+	int val;
+	val = get_sem(i);
+	printf("semaphore[%d]=%d\n", i, val);
+}
+
+void create_sem(int N)
+{
+	printx(DEBUG, BUS, "create %d semaphores\n", N);
+	mySem = semget(KEY, N, 0666 | IPC_CREAT);
+	if(mySem < 0)
+		printx(ERROR, BUS, "Unable to create the semaphore\n");
+}
+
+void init_sem(int N)
+{
+	int j;
+	int retval;
+	union semun
+	{
+		int val;
+		struct semid_ds *buf;
+		ushort *array;
+	}arg;
+	arg.val = 1;
+	for (j=0; j<N; j++)
+	{
+		retval = semctl(mySem, j, SETVAL, arg);
+		if(retval < 0)
+			printx(ERROR, BUS, "Unable to initialize the semaphore\n");
+	}
+}
+
+void PV(int i, int act)
+{
+	struct sembuf op;
+	int retval;
+
+	op.sem_num = i;
+	op.sem_op = act; //1=V, -1=P
+	op.sem_flg = 0; //will wait
+	retval = semop(mySem, &op, 1);
+	if(retval != 0)
+		printx(ERROR, BUS, "Error semop will do %d\n", act);
+}
+
+void P(int i)
+{
+	PV(i, -1);
+}
+
+void V(int i)
+{
+	PV(i, 1);
+} 
 
 void stopBus()
 {
@@ -59,7 +138,7 @@ void processCmd(char* buffer)
 		setHeatTimer(5);
 		setHeatWantedState(true);
 	}
-	else if(strcmp(buffer, "setheaton35s") == 0)
+	else if(strcmp(buffer, "setheaton10s") == 0)
 	{
 		printx(INFO, BUS, "Setting HEAT ON for 10 secs");
 		setHeatTimer(10);
@@ -82,8 +161,9 @@ void* processBus(void* we)
 	printx(DEBUG, BUS, "Waiting for events\n");
 	while(!busStop)
 	{
-		while(busFree);
-		while(!busFree);
+		P(SEM_OUTPUT);
+		//while(busFree);
+		//while(!busFree);
 		printx(DEBUG, BUS, "Event receved !\n");
 		busFree = false;
 		lseek(bus, 0, SEEK_SET);
@@ -93,12 +173,17 @@ void* processBus(void* we)
 		processCmd(buffer);
 		busFree = true;
 		printx(DEBUG, BUS, buffer);
+		V(SEM_INPUT);
 	}
 	return NULL;
 }
 
 bool initBus()
 {
+	create_sem(SEM_NUMBER);
+	printx(ERROR, BUS, "Oh dear, something went wrong with %s !\n", strerror(errno));
+	init_sem(SEM_INPUT);
+	init_sem(SEM_OUTPUT);
 	bus = creat("bus.log", 0666);
 	if(bus == -1)
 	{
@@ -106,16 +191,18 @@ bool initBus()
 		return false;
 	}
 
+	//P(SEM_INPUT);
+
 	return true;
 }
 
 void sendToBus(char* cmd)
 {
-	while(!busFree);
-	busFree = false;
+	printx(DEBUG, BUS, "Control semaphore %d in %d out %d\n", mySem, get_sem(SEM_INPUT), get_sem(SEM_OUTPUT));
+	P(SEM_INPUT);
 	ftruncate(bus, 0);
 	ftruncate(bus, CMD_MAX);
 	lseek(bus, 0, SEEK_SET);
 	dprintf(bus, "%s\n", cmd);
-	busFree = true;
+	V(SEM_OUTPUT);
 }

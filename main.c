@@ -11,7 +11,10 @@
 int main(void)
 {
 	int ret;
-	pthread_t tUI, tNFC, tBUS, tHVC;
+	pthread_t tUI;
+	pthread_t tNFC;
+	pthread_t tBUS;
+	pthread_t tHVC;
 	initUILog();
 	if(!initLog())
 	{
