@@ -18,11 +18,12 @@ float start;
 
 void removeCharFromString(char c, char *str)
 {
-	int len = strlen(str)+1;
+/*	int len = strlen(str)+1;
 
 	for(int i=0; i<len; i++)
 		if(str[i] == c)
 			strncpy(&str[i],&str[i+1],len-i);
+*/
 }
 
 bool initLog()
@@ -57,11 +58,11 @@ void printx(severity s, msgfrom from, char* str, ...)
 	char	buffer1[MAX_BUFFER];
 	char	buffer2[MAX_BUFFER];
 	va_list	arglist;
-	float	now = clock();
+	//float	now = clock();
 	va_start(arglist, str);
 	vsprintf(buffer1, str, arglist);
-	fprintf(logfile, "[%6f] : %s", (now - start)/CLOCKS_PER_SEC, buffer1);
-	fflush(logfile);
+	//fprintf(logfile, "[%6f] : %s", (now - start)/CLOCKS_PER_SEC, buffer1);
+	//fflush(logfile);
 	sprintf(buffer2, "[%s] %s%s%s", f_name[from], s_color[s], buffer1, S_RESET);
 	removeCharFromString('\n', buffer2);
 	addToLog(buffer2);

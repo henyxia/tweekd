@@ -174,6 +174,7 @@ void* processBus(void* we)
 		busFree = true;
 		printx(DEBUG, BUS, buffer);
 		V(SEM_INPUT);
+		usleep(2);
 	}
 	return NULL;
 }

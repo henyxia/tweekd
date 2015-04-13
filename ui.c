@@ -112,7 +112,7 @@ char* fillHeaderWithSpaces(char* buf, char* text)
 
 void addToLog(char* newStr)
 {
-	for(int i=LOG_LINES-2; i>=0; i--)
+	for(int i=LOG_LINES-3; i>=0; i--)
 		strcpy(uilog[i+1], uilog[i]);
 	strcpy(uilog[0], newStr);
 }
@@ -129,10 +129,10 @@ char* fillLogWithSpaces(char* buf, char* text)
 }
 
 char* fillStatusWithSpaces(char* buf, char* text)
-{
+{/*
 	strncpy(buf, text, LOG_LENGTH);
 		strncat(buf, SPACES, LOG_LENGTH-strlen(buf)-1-7);
-
+*/
 	return buf;
 }
 
@@ -153,7 +153,7 @@ void displayUI()
 {
 	char	buffer[LOG_LENGTH];
 	struct timeval tv = {0, 5000};
-	char	bufferO[4];
+	char	bufferO[4] = {0, 0, 0, 0};
 	fd_set rdfs;
 	FD_ZERO(&rdfs);
 	FD_SET(STDIN_FILENO, &rdfs);

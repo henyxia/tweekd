@@ -68,7 +68,7 @@ bool isTagPresent(char* tag)
 	if(data == PROFESSOR_TAG)
 	{
 		sendData(&nfc_fd, GET_TAG_DETAILS);
-		printx(INFO, NFC, "Professor Tag Detected %02x\n", data);
+		//printx(INFO, NFC, "Professor Tag Detected %02x\n", data);
 		//return (read(serial_fd, tag, 6) == 6);
 	}
 	else if(data == STUDENT_TAG)
