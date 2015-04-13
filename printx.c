@@ -18,12 +18,11 @@ float start;
 
 void removeCharFromString(char c, char *str)
 {
-/*	int len = strlen(str)+1;
+	int len = strlen(str)+1;
 
 	for(int i=0; i<len; i++)
 		if(str[i] == c)
 			strncpy(&str[i],&str[i+1],len-i);
-*/
 }
 
 bool initLog()

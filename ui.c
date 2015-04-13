@@ -129,10 +129,11 @@ char* fillLogWithSpaces(char* buf, char* text)
 }
 
 char* fillStatusWithSpaces(char* buf, char* text)
-{/*
-	strncpy(buf, text, LOG_LENGTH);
-		strncat(buf, SPACES, LOG_LENGTH-strlen(buf)-1-7);
-*/
+{
+	//TODO
+	//strncpy(buf, text, LOG_LENGTH);
+		//strncat(buf, SPACES, LOG_LENGTH-strlen(buf)-1-8);
+
 	return buf;
 }
 
