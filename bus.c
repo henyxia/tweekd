@@ -12,6 +12,8 @@
 #include "ui.h"
 #include "nfc.h"
 #include "hvc.h"
+#include "heat.h"
+#include "pump.h"
 
 #define	CMD_MAX		70
 #define KEY			1100
@@ -94,7 +96,8 @@ void P(int i)
 void V(int i)
 {
 	PV(i, 1);
-} 
+}
+
 
 void stopBus()
 {
@@ -132,6 +135,12 @@ void processCmd(char* buffer)
 		printx(INFO, BUS, "Setting HEAT OFF");
 		setHeatWantedState(false);
 	}
+	else if(strcmp(buffer, "setheaton2s") == 0)
+	{
+		printx(INFO, BUS, "Setting HEAT ON for 2 secs");
+		setHeatTimer(2);
+		setHeatWantedState(true);
+	}
 	else if(strcmp(buffer, "setheaton5s") == 0)
 	{
 		printx(INFO, BUS, "Setting HEAT ON for 5 secs");
@@ -144,11 +153,28 @@ void processCmd(char* buffer)
 		setHeatTimer(10);
 		setHeatWantedState(true);
 	}
+	else if(strcmp(buffer, "setheaton15s") == 0)
+	{
+		printx(INFO, BUS, "Setting HEAT ON for 15 secs");
+		setHeatTimer(15);
+		setHeatWantedState(true);
+	}
 	else if(strcmp(buffer, "setpumpon5s") == 0)
 	{
 		printx(INFO, BUS, "Setting PUMP ON for 5 secs");
 		setPumpTimer(5);
 		setPumpWantedState(true);
+	}
+	else if(strcmp(buffer, "setpumpon10s") == 0)
+	{
+		printx(INFO, BUS, "Setting PUMP ON for 10 secs");
+		setPumpTimer(10);
+		setPumpWantedState(true);
+	}
+	else if(strcmp(buffer, "autoheat") == 0)
+	{
+		printx(INFO, BUS, "Processing Auto Heat to 90°C");
+		processHeat(NULL);
 	}
 
 	//printx(DEBUG, BUS, "STRLEN : %d and strcmp ret %d", strlen(buffer), strcmp(buffer, "quit"));
@@ -162,8 +188,6 @@ void* processBus(void* we)
 	while(!busStop)
 	{
 		P(SEM_OUTPUT);
-		//while(busFree);
-		//while(!busFree);
 		printx(DEBUG, BUS, "Event receved !\n");
 		busFree = false;
 		lseek(bus, 0, SEEK_SET);
@@ -191,8 +215,6 @@ bool initBus()
 		printf("Unable to open the bus file\n");
 		return false;
 	}
-
-	//P(SEM_INPUT);
 
 	return true;
 }

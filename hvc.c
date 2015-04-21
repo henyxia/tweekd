@@ -13,6 +13,7 @@
 #include "hvc.h"
 #include "printx.h"
 #include "serial.h"
+#include "heat.h"
 
 #define	DEVICE1				"/dev/ttyACM1"
 #define	SPEED				B19200
@@ -31,6 +32,7 @@ int		hvc_fd = -1;
 bool	hvcStop = false;
 bool	sPump = false;
 bool	sHeat = false;
+bool autoHeat = false;
 struct	termios hvcSaveterm;
 bool	wHeat = false;
 bool	wPump = false;
@@ -40,6 +42,7 @@ double	tHeatTimer;
 time_t	tPumpStart;
 double	tPumpTimer;
 time_t	tPumpStop;
+int tempCons;
 
 void stopHVC()
 {
@@ -70,6 +73,11 @@ void setHeatTimer(double t)
 	tHeatTimer = t;
 }
 
+void setAutoHeat(bool s)
+{
+	autoHeat = s;
+}
+
 bool initHVC()
 {
 	unsigned char data;
@@ -97,6 +105,7 @@ bool initHVC()
 void* processHVC(void* we)
 {
 	uint8_t data;
+	float temp;
 
 	while(!hvcStop)
 	{
@@ -104,7 +113,8 @@ void* processHVC(void* we)
 		sendData(&hvc_fd, GET_TEMP);
 		data = getData(&hvc_fd);
 		setTemp(data);
-		printx(DEBUG, HVC, "TEMP %f\n", 25 + (((float)(80*data)))/255);
+		temp = 25 + (((float)(80*data)))/255;
+		printx(DEBUG, HVC, "TEMP %f\n", temp);
 		if(tHeatTimer > 0)
 		{
 			tHeatStop = clock();
@@ -113,7 +123,6 @@ void* processHVC(void* we)
 				wHeat = false;
 				tHeatTimer = 0;
 			}
-
 		}
 
 		if(tPumpTimer > 0)
