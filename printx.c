@@ -63,7 +63,6 @@ void printx(severity s, msgfrom from, char* str, ...)
 	fprintf(logfile, "[%6f] : %s", (now - start)/CLOCKS_PER_SEC, buffer1);
 	fflush(logfile);
 	sprintf(buffer2, "[%s] %s%s%s", f_name[from], s_color[s], buffer1, S_RESET);
-	removeCharFromString('\n', buffer2);
-	addToLog(buffer2);
+	printf("%s", buffer2);
 	va_end(arglist);
 }

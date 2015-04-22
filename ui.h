@@ -5,8 +5,6 @@
 
 void*	drawUI(void*);
 void	initUILog();
-void	addToLog(char*);
-void	displayUI();
 void	setDebit(unsigned int);
 void	setHeat(bool);
 void	setPump(bool);

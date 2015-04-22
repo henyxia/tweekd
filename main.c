@@ -23,7 +23,6 @@ int main(void)
 	}
 	printx(INFO, MAIN, "Tweekd starting\n");
 	printx(DEBUG, MAIN, "Creating processes\n");
-	displayUI();
 	ret = pthread_create(&tUI, NULL, drawUI, NULL);
 	printx(DEBUG, MAIN, "UI Started ID %08x ret %d\n", tUI, ret);
 	printx(INFO, MAIN, "Initializing NFC");
@@ -45,6 +44,8 @@ int main(void)
 		return 4;
 	}
 	pthread_create(&tHVC, NULL, processHVC, NULL);
+	//initProcessHeat();
+
 	pthread_join(tUI, NULL);
 	closeLog();
 	return 0;
