@@ -25,7 +25,7 @@ int main(void)
 	printx(DEBUG, MAIN, "Creating processes\n");
 	ret = pthread_create(&tUI, NULL, drawUI, NULL);
 	printx(DEBUG, MAIN, "UI Started ID %08x ret %d\n", tUI, ret);
-	printx(INFO, MAIN, "Initializing NFC");
+	printx(INFO, MAIN, "Initializing NFC\n");
 	if(!initNFC())
 	{
 		printx(ERROR, MAIN, "Unable to start the NFC interface\n");

@@ -1,9 +1,9 @@
 CC=gcc
 CC_FLAGS=-c -Wall -Werror -std=gnu99 -g
-CC_LIBS=-pthread
+CC_LIBS=-pthread -lusb-1.0
 INCLUDES=
 
-SOURCES=main.c printx.c ui.c serial.c nfc.c bus.c hvc.c heat.c pump.c
+SOURCES=main.c printx.c ui.c serial.c nfc.c bus.c hvc.c heat.c pump.c usb.c
 OBJECTS=$(SOURCES:.c=.o)
 OUTPUT=tweekd
 

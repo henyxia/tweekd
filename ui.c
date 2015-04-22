@@ -7,6 +7,7 @@
 #include <termios.h>
 #include "ui.h"
 #include "bus.h"
+#include "usb.h"
 
 #define	TIME_LENGTH			24
 #define	HEADER_TEXT_LENGTH	24
@@ -54,15 +55,13 @@ void setDebit(unsigned int d)
 
 void processScreen()
 {
-	
+
 }
 
 void* drawUI(void* we)
 {
 	while(!uiStop)
 	{
-		//printf("\x1b[2J\x1b[1;1H");
-		//displayUI();
 		processScreen();
 		usleep(SCREEN_TIME);
 	}
@@ -84,20 +83,7 @@ void initUILog()
 	mainPid = getpid();
 	uid[0]='\0';
 	uidDate[0]='\0';
-}
-
-char* fillHeaderWithSpaces(char* buf, char* text)
-{
-	char tmpretheader[HEADER_TEXT_LENGTH+1];
-	strcpy(tmpretheader, text);
-	while(strlen(tmpretheader) < HEADER_TEXT_LENGTH)
-		strcat(tmpretheader, " ");
-
-	for(int i=0; i<strlen(tmpretheader); i++)
-		buf[i] = tmpretheader[i];
-	buf[strlen(tmpretheader)] = '\0';
-
-	return buf;
+	initUSB();
 }
 
 void setStartTime(char* sT)
