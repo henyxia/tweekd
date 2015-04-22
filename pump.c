@@ -1,22 +1,21 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "hvc.h"
 #include "pump.h"
 
 #define K_DEB 1925 //en imp/L  
 
-
-//Globals
-bool stop=false;
-bool heat_ok=false;
-bool coffee_wanted=false;
-int volDeb=0; // Volume du débitmetre en impulsion
-int volWanted=0;
-
-void* processHeat(void* arg)
+void* processPump(void* arg)
 {
-	while (!stop)
+	bool stopPump=false;
+	bool heat_ok=false;
+	bool coffee_wanted=false;
+	int volDeb=0; // Volume du débitmetre en impulsion
+	int volWanted=0;
+
+	while (!stopPump)
 	{
 		if (heat_ok && coffee_wanted)
 		{
@@ -34,4 +33,6 @@ void* processHeat(void* arg)
 		}
 		sleep(1);
 	}
+
+	return NULL;
 }

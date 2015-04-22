@@ -35,10 +35,11 @@ bool heat_ok=false;
 bool hold_heat=true;
 bool pumpitup=false; //Lecture de l'état de la pompe
 bool eco_mode=false;
+bool stopHeat=false;
 
 void* processHeat(void* arg)
 {
-	while(!stop)
+	while(!stopHeat)
 	{
 		tNow = clock();
 		
@@ -230,5 +231,5 @@ void* processHeat(void* arg)
 	}
 	
 	
-return NULL;
+	return NULL;
 }

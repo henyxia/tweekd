@@ -32,7 +32,7 @@ int		hvc_fd = -1;
 bool	hvcStop = false;
 bool	sPump = false;
 bool	sHeat = false;
-bool autoHeat = false;
+bool	autoHeat = false;
 struct	termios hvcSaveterm;
 bool	wHeat = false;
 bool	wPump = false;
@@ -42,7 +42,27 @@ double	tHeatTimer;
 time_t	tPumpStart;
 double	tPumpTimer;
 time_t	tPumpStop;
-int tempCons;
+int		tempCons;
+
+void setPumpOn()
+{
+	setPumpWantedState(true);
+}
+
+void setPumpOff()
+{
+	setPumpWantedState(false);
+}
+
+void setHeatOn()
+{
+	setHeatWantedState(true);
+}
+
+void setHeatOff()
+{
+	setHeatWantedState(false);
+}
 
 void stopHVC()
 {
