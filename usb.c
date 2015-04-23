@@ -108,7 +108,7 @@ bool initUSB(void)
 		return false;
 	}
 
-	printf("%d devices detected\n", cnt);
+	printf("%d devices detected\n", (int)cnt);
 	printf("List of compatible devices detected\n");
 
 	for (int i = 0; i < cnt; i++)

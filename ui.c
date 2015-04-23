@@ -62,7 +62,7 @@ void* drawUI(void* we)
 {
 	while(!uiStop)
 	{
-		processScreen();
+		//processScreen();
 		usleep(SCREEN_TIME);
 	}
 
@@ -83,7 +83,7 @@ void initUILog()
 	mainPid = getpid();
 	uid[0]='\0';
 	uidDate[0]='\0';
-	initUSB();
+	//initUSB();
 }
 
 void setStartTime(char* sT)

@@ -176,6 +176,12 @@ void processCmd(char* buffer)
 		printx(INFO, BUS, "Processing Auto Heat to 90°C");
 		processHeat(NULL);
 	}
+	else if(strcmp(buffer, "stopautoheat") == 0)
+	{
+		printx(INFO, BUS, "Auto Heat has been stopped");
+		stopAutoHeat();
+	}
+	
 
 	//printx(DEBUG, BUS, "STRLEN : %d and strcmp ret %d", strlen(buffer), strcmp(buffer, "quit"));
 }

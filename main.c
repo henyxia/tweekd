@@ -5,6 +5,7 @@
 #include "nfc.h"
 #include "bus.h"
 #include "hvc.h"
+#include "heat.h"
 
 #include <unistd.h>
 
@@ -43,8 +44,15 @@ int main(void)
 		printx(ERROR, MAIN, "Unable to start the HVC interface\n");
 		return 4;
 	}
+<<<<<<< Updated upstream
 	pthread_create(&tHVC, NULL, processHVC, NULL);*/
 	//initProcessHeat();
+=======
+	pthread_create(&tHVC, NULL, processHVC, NULL);
+	initProcessHeat();
+	setPumpOn();
+	processHeat(NULL);
+>>>>>>> Stashed changes
 
 	pthread_join(tUI, NULL);
 	closeLog();
