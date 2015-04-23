@@ -166,7 +166,11 @@ bool initUSB(void)
 	
 	libusb_free_config_descriptor(dConfig);
 
-	displayPicture("home.rgb");
+	unsigned char data[] = {0x81, 0x00, 0x00};
+	int transfered;
+	libusb_bulk_transfer(screenHandle, ENDPOINT_OUT, data, 3, &transfered, 0);
+
+	displayPicture("img/home.boz");
 
 	return true;
 }
