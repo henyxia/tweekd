@@ -15,6 +15,13 @@ libusb_device_handle*	screenHandle;
 unsigned char			data[MAX_SIZE_OUT];
 unsigned short			dataPointer = 0;
 
+void blackScreen(void)
+{
+	unsigned char data[] = {0x81, 0x00, 0x00};
+	int transfered;
+	libusb_bulk_transfer(screenHandle, ENDPOINT_OUT, data, 3, &transfered, 0);
+}
+
 void fillDataWithHeader(void)
 {
 	data[dataPointer] = 0x82; // HEADER
@@ -58,6 +65,7 @@ void displayPicture(char* filename)
 {
 	FILE* file = NULL;
 	file = fopen(filename, "r");
+	dataPointer = 0;
 
 	if(file == NULL)
 	{
@@ -80,6 +88,11 @@ void displayPicture(char* filename)
 		if(dataPointer == MAX_SIZE_OUT)
 			sendUSBData(i);
 	}
+
+	if(dataPointer != 0)
+		sendUSBData(-1);
+
+	printf("Screen updated\n");
 }
 
 bool initUSB(void)
@@ -165,10 +178,6 @@ bool initUSB(void)
 	}
 	
 	libusb_free_config_descriptor(dConfig);
-
-	unsigned char data[] = {0x81, 0x00, 0x00};
-	int transfered;
-	libusb_bulk_transfer(screenHandle, ENDPOINT_OUT, data, 3, &transfered, 0);
 
 	displayPicture("img/home.boz");
 

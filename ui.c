@@ -13,10 +13,10 @@
 #define	HEADER_TEXT_LENGTH	24
 #define	LOG_LINES			35
 #define	LOG_LENGTH			82
-#define	IPS					20
+#define	IPS					2
 #define	SCREEN_TIME			1000000/IPS
 #define	SC_HOME				0
-#define	SC_MAIN				0
+#define	SC_MAIN				1
 #define	SPACES				"                                                                                                                                                                                                                                                                  "
 char			started[TIME_LENGTH];
 char			uid[HEADER_TEXT_LENGTH];
@@ -59,7 +59,7 @@ void processScreen()
 {
 	if(actScreen == SC_HOME)
 	{
-		if(strcmp(uid, "") == 0)
+		if(uid[0] == '\0')
 			return;
 		else
 		{
@@ -73,7 +73,7 @@ void* drawUI(void* we)
 {
 	while(!uiStop)
 	{
-		//processScreen();
+		processScreen();
 		usleep(SCREEN_TIME);
 	}
 
@@ -93,12 +93,7 @@ void initUILog()
 	started[0]='\0';
 	mainPid = getpid();
 	uid[0]='\0';
-<<<<<<< Updated upstream
-	uidDate[0]='\0';
-	//initUSB();
-=======
 	initUSB();
->>>>>>> Stashed changes
 }
 
 void setStartTime(char* sT)

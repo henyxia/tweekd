@@ -15,7 +15,7 @@ int main(void)
 	pthread_t tUI;
 	pthread_t tNFC;
 	pthread_t tBUS;
-	//pthread_t tHVC;
+	pthread_t tHVC;
 	initUILog();
 	if(!initLog())
 	{
@@ -38,21 +38,16 @@ int main(void)
 		printx(ERROR, MAIN, "Unable to start the BUS interface\n");
 		return 3;
 	}
-	pthread_create(&tBUS, NULL, processBus, NULL);/*
+	pthread_create(&tBUS, NULL, processBus, NULL);
 	if(!initHVC())
 	{
 		printx(ERROR, MAIN, "Unable to start the HVC interface\n");
 		return 4;
 	}
-<<<<<<< Updated upstream
-	pthread_create(&tHVC, NULL, processHVC, NULL);*/
-	//initProcessHeat();
-=======
 	pthread_create(&tHVC, NULL, processHVC, NULL);
 	initProcessHeat();
 	setPumpOn();
 	processHeat(NULL);
->>>>>>> Stashed changes
 
 	pthread_join(tUI, NULL);
 	closeLog();
