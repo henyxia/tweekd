@@ -174,4 +174,3 @@ bool initUSB(void)
 
 	return true;
 }
-

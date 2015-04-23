@@ -12,7 +12,7 @@ int main(void)
 {
 	int ret;
 	pthread_t tUI;
-	//pthread_t tNFC;
+	pthread_t tNFC;
 	pthread_t tBUS;
 	//pthread_t tHVC;
 	initUILog();
@@ -25,13 +25,13 @@ int main(void)
 	printx(DEBUG, MAIN, "Creating processes\n");
 	ret = pthread_create(&tUI, NULL, drawUI, NULL);
 	printx(DEBUG, MAIN, "UI Started ID %08x ret %d\n", tUI, ret);
-	printx(INFO, MAIN, "Initializing NFC\n");/*
+	printx(INFO, MAIN, "Initializing NFC\n");
 	if(!initNFC())
 	{
 		printx(ERROR, MAIN, "Unable to start the NFC interface\n");
 		return 2;
 	}
-	pthread_create(&tNFC, NULL, processNFC, NULL);*/
+	pthread_create(&tNFC, NULL, processNFC, NULL);
 	if(!initBus())
 	{
 		printx(ERROR, MAIN, "Unable to start the BUS interface\n");
