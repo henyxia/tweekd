@@ -15,18 +15,20 @@
 #define	LOG_LENGTH			82
 #define	IPS					20
 #define	SCREEN_TIME			1000000/IPS
+#define	SC_HOME				0
+#define	SC_MAIN				0
 #define	SPACES				"                                                                                                                                                                                                                                                                  "
-char	started[TIME_LENGTH];
-char	uid[HEADER_TEXT_LENGTH];
-char	uidDate[HEADER_TEXT_LENGTH];
-char	cmd[LOG_LENGTH];
-pid_t	mainPid;
-bool	heat = false;
-bool	pump = false;
+char			started[TIME_LENGTH];
+char			uid[HEADER_TEXT_LENGTH];
+char			cmd[LOG_LENGTH];
+pid_t			mainPid;
+bool			heat = false;
+bool			pump = false;
 unsigned int	temp = 1;
 unsigned int	debit = 1;
-struct	termios old={0};
-bool uiStop = false;
+struct			termios old={0};
+bool			uiStop = false;
+int				actScreen = SC_HOME;
 
 void stopUI()
 {
@@ -55,7 +57,16 @@ void setDebit(unsigned int d)
 
 void processScreen()
 {
-
+	if(actScreen == SC_HOME)
+	{
+		if(strcmp(uid, "") == 0)
+			return;
+		else
+		{
+			actScreen = SC_MAIN;
+			displayPicture("img/main.boz");
+		}
+	}
 }
 
 void* drawUI(void* we)
@@ -71,9 +82,9 @@ void* drawUI(void* we)
 
 void setTagName(char* tag)
 {
-	time_t now = time(NULL);
+	//time_t now = time(NULL);
 	strcpy(uid, tag);
-	strftime(uidDate, HEADER_TEXT_LENGTH, "%F-%T:%d", localtime(&now));
+	//strftime(uidDate, HEADER_TEXT_LENGTH, "%F-%T:%d", localtime(&now));
 }
 
 void initUILog()
@@ -82,8 +93,12 @@ void initUILog()
 	started[0]='\0';
 	mainPid = getpid();
 	uid[0]='\0';
+<<<<<<< Updated upstream
 	uidDate[0]='\0';
 	//initUSB();
+=======
+	initUSB();
+>>>>>>> Stashed changes
 }
 
 void setStartTime(char* sT)

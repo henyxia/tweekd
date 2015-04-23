@@ -47,7 +47,7 @@ void fillDataWithSubHeader(void)
 
 void sendUSBData(int i)
 {
-	printf("Sending data %d\n", i);
+	//printf("Sending data %d\n", i);
 	int transfered;
 	libusb_bulk_transfer(screenHandle, ENDPOINT_OUT, data, dataPointer, &transfered, 0);
 	dataPointer = 0;
