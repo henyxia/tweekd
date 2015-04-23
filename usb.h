@@ -2,5 +2,6 @@
 #define __USB_H__
 
 bool initUSB();
+void displayPicture(char*);
 
 #endif

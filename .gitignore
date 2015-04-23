@@ -3,3 +3,7 @@
 tweekd
 *.log
 *.csv
+*.rgb
+*.bmpr
+*.map
+*.boz

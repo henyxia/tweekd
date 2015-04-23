@@ -8,8 +8,79 @@
 #define PRODUCT_ID		0xa001
 #define ENDPOINT_OUT	0x01
 #define	MAX_SIZE_OUT	64
+#define HEIGHT			240
+#define WIDTH			320
 
-libusb_device_handle* screenHandle;
+libusb_device_handle*	screenHandle;
+unsigned char			data[MAX_SIZE_OUT];
+unsigned short			dataPointer = 0;
+
+void fillDataWithHeader(void)
+{
+	data[dataPointer] = 0x82; // HEADER
+	dataPointer++;
+	data[dataPointer] = 0x00; // XPOS
+	dataPointer++;
+	data[dataPointer] = 0x00; // XPOS
+	dataPointer++;
+	data[dataPointer] = 0x00; // YPOS
+	dataPointer++;
+	data[dataPointer] = 0x00; // YPOS
+	dataPointer++;
+	data[dataPointer] = 0x40; // Width 0x40
+	dataPointer++;
+	data[dataPointer] = 0x01; // Width 0x01
+	dataPointer++;
+	data[dataPointer] = 0xF0; // Height 
+	dataPointer++;
+	data[dataPointer] = 0x00; // Height
+	dataPointer++;
+	data[dataPointer] = 0x00; // Copy
+	dataPointer++;
+}
+
+void fillDataWithSubHeader(void)
+{
+	data[dataPointer] = 0x02; // HEADER
+	dataPointer++;
+}
+
+void sendUSBData(int i)
+{
+	printf("Sending data %d\n", i);
+	int transfered;
+	libusb_bulk_transfer(screenHandle, ENDPOINT_OUT, data, dataPointer, &transfered, 0);
+	dataPointer = 0;
+	fillDataWithSubHeader();
+}
+
+void displayPicture(char* filename)
+{
+	FILE* file = NULL;
+	file = fopen(filename, "r");
+
+	if(file == NULL)
+	{
+		printf("Unable to open the picture\n");
+		return;
+	}
+	else
+		printf("Picture successfully opened\n");
+
+	fillDataWithHeader();
+	for(int i=0; i<HEIGHT*WIDTH*2; i++)
+	{
+		if(feof(file))
+		{
+			printf("File corrupted\n");
+			return;
+		}
+		data[dataPointer] = getc(file);
+		dataPointer++;
+		if(dataPointer == MAX_SIZE_OUT)
+			sendUSBData(i);
+	}
+}
 
 bool initUSB(void)
 {
@@ -94,6 +165,8 @@ bool initUSB(void)
 	}
 	
 	libusb_free_config_descriptor(dConfig);
+
+	displayPicture("home.rgb");
 
 	return true;
 }
