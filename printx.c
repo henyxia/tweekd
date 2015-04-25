@@ -11,7 +11,7 @@
 #define	S_RESET			"\33[0m"
 #define	MAX_BUFFER		128
 
-FILE* logfile = NULL;
+FILE* logfiles[5] = {NULL, NULL, NULL, NULL, NULL};
 char s_color[4][12] = {"\x1b[01;31m", "\x1b[01;33m", "\x1b[01;32m", "\x1b[01;36m"};
 char f_name[5][5] = {"MAIN", "UI  ", "NFC ", "HVC ", "BUS "};
 float start;
@@ -60,9 +60,10 @@ void printx(severity s, msgfrom from, char* str, ...)
 	float	now = clock();
 	va_start(arglist, str);
 	vsprintf(buffer1, str, arglist);
-	fprintf(logfile, "[%6f] : %s", (now - start)/CLOCKS_PER_SEC, buffer1);
+	fprintf(logfile, "[%6.6f] : %s", (now - start)/CLOCKS_PER_SEC, buffer1);
 	fflush(logfile);
 	sprintf(buffer2, "[%s] %s%s%s", f_name[from], s_color[s], buffer1, S_RESET);
-	printf("%s", buffer2);
+	if(s>DEBUG)
+		printf("%s", buffer2);
 	va_end(arglist);
 }
