@@ -27,27 +27,57 @@ void removeCharFromString(char c, char *str)
 
 bool initLog()
 {
-	//char	filename[FILENAME_LENGTH];
-	//time_t	now = time(NULL);
+	logfiles[0] = fopen("log/main.log", "a");
+	if(logfiles[0] == NULL)
+	{
+		printf("Unable to open the main log file\n");
+		return false;
+	}
+	logfiles[1] = fopen("log/ui.log", "a");
+	if(logfiles[1] == NULL)
+	{
+		printf("Unable to open the UI log file\n");
+		return false;
+	}
 
-	//strftime(filename, FILENAME_LENGTH, "%F-%T:%d", localtime(&now));
-	//setStartTime(filename);
-	//strftime(filename, FILENAME_LENGTH, "log/%F-%T:%d", localtime(&now));
-	//strcat(filename, ".log");
+	logfiles[2] = fopen("log/nfc.log", "a");
+	if(logfiles[2] == NULL)
+	{
+		printf("Unable to open the NFC log file\n");
+		return false;
+	}
 
-	logfiles[5] = fopen("temp.log", "a");
+	logfiles[3] = fopen("log/hvc.log", "a");
+	if(logfiles[3] == NULL)
+	{
+		printf("Unable to open the HVC log file\n");
+		return false;
+	}
+
+	logfiles[4] = fopen("log/bus.log", "a");
+	if(logfiles[4] == NULL)
+	{
+		printf("Unable to open the BUS log file\n");
+		return false;
+	}
+
+	logfiles[5] = fopen("log/temp.log", "a");
 	if(logfiles[5] == NULL)
 	{
 		printf("Unable to open the temperature log file\n");
 		return false;
 	}
 
-
 	return true;
 }
 
 void closeLog()
 {
+	fclose(logfiles[0]);
+	fclose(logfiles[1]);
+	fclose(logfiles[2]);
+	fclose(logfiles[3]);
+	fclose(logfiles[4]);
 	fclose(logfiles[5]);
 }
 
@@ -59,8 +89,8 @@ void printx(severity s, msgfrom from, char* str, ...)
 	va_start(arglist, str);
 	vsprintf(buffer1, str, arglist);
 	gettimeofday(&tv,NULL);
-	fprintf(logfiles[5], "[%10ld] : %s", tv.tv_usec, buffer1);
-	fflush(logfiles[5]);
+	fprintf(logfiles[from], "[%10ld.%06ld] : %s", tv.tv_sec, tv.tv_usec, buffer1);
+	fflush(logfiles[from]);
 	sprintf(buffer2, "[%s] %s%s%s", f_name[from], s_color[s], buffer1, S_RESET);
 	if(s>DEBUG)
 		printf("%s", buffer2);
