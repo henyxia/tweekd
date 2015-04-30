@@ -3,18 +3,19 @@
 #include <stdbool.h>
 #include "hvc.h"
 #include "heat.h"
+#include "pump.h"
 #include "printx.h"
 
 #define TASK_NUMBER 32
 #define T_INIT_THRESH 40
-#define T_STEP_THRESH 80 //OP is 86
-#define T_HOLD_THRESH 82 //OP is 88
+#define T_STEP_THRESH 80
+#define T_HOLD_THRESH 85 //OP is 88
 #define INIT_HEAT_TIME 15
 #define INIT_WAIT_TIME 15
 #define STEP_HEAT_TIME 2
 #define STEP_WAIT_TIME 8 //OP is 5
 #define HOLD_HEAT_TIME 1
-#define HOLD_WAIT_TIME 8 //OP is 4
+#define HOLD_WAIT_TIME 8
 #define HOLD_PUMP_HEAT_TIME 3
 #define HOLD_PUMP_WAIT_TIME 5
 
@@ -22,19 +23,16 @@
 //Globals
 time_t tTask;
 time_t tNow;
-float tAct; //Lecture de la température du capteur
+float tAct;
 bool task[TASK_NUMBER];
 bool stop=false;
-bool heat_ok=false;
 bool hold_heat=true;
-bool pumpitup=false; //Lecture de l'état de la pompe
 bool eco_mode=false;
 bool stopHeat=false;
-
+bool heat_ok=false;
 
 void initProcessHeat(void)
 {
-	//Initialisation du tableau task
 	task[0]=true;
 	for (int i_initH=1;i_initH<TASK_NUMBER;i_initH++)
 		task[i_initH]=false;
@@ -48,6 +46,21 @@ void actTemp(float temp)
 void stopAutoHeat(void)
 {
 	stopHeat = true;
+}
+
+void setHeatOk(void)
+{
+	heat_ok=true;
+}
+
+void resetHeatOk(void)
+{
+	heat_ok=false;
+}
+
+bool isHeatOk(void)
+{
+	return heat_ok;
 }
 
 void* processHeat(void* arg)
@@ -64,7 +77,7 @@ void* processHeat(void* arg)
 			if (tAct < T_INIT_THRESH)
 			{
 				setHeatOn();
-				printx(INFO, BUS, "Début chauffe initiale 0");
+				printx(INFO, BUS, "Début chauffe initiale 0\n");
 				task[0] = false;
 				task[1] = true;
 			}
@@ -88,7 +101,7 @@ void* processHeat(void* arg)
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > INIT_HEAT_TIME )
 			{
 				setHeatOff();
-				printx(INFO, BUS, "Fin chauffe initiale 1");
+				printx(INFO, BUS, "Fin chauffe initiale 1\n");
 				task[2] = false;
 				task[3] = true;
 			}
@@ -105,7 +118,7 @@ void* processHeat(void* arg)
 		{
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > INIT_WAIT_TIME )
 			{
-				printx(INFO, BUS, "Fin attente %d sec 2", INIT_WAIT_TIME);
+				printx(INFO, BUS, "Fin attente %d sec 2\n", INIT_WAIT_TIME);
 				task[4] = false;
 				task[5] = true;
 			}
@@ -125,7 +138,7 @@ void* processHeat(void* arg)
 		{
 			if (tAct < T_STEP_THRESH)
 			{
-				printx(INFO, BUS, "Début Chauffe par palier 3");
+				printx(INFO, BUS, "Début Chauffe par palier 3\n");
 				setHeatOn();
 				task[6] = false;
 				task[7] = true;
@@ -149,7 +162,7 @@ void* processHeat(void* arg)
 		{
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > STEP_HEAT_TIME )
 			{
-				printx(INFO, BUS, "Fin de chauffe palier intermédiaire 4");
+				printx(INFO, BUS, "Fin de chauffe palier intermédiaire 4\n");
 				setHeatOff();
 				task[8] = false;
 				task[9] = true;
@@ -167,7 +180,7 @@ void* processHeat(void* arg)
 		{
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > STEP_WAIT_TIME )
 			{
-				printx(INFO, BUS, "Fin d'attente palier intermédiaire 5");
+				printx(INFO, BUS, "Fin d'attente palier intermédiaire 5\n");
 				
 				if ( tAct < T_STEP_THRESH )
 				{
@@ -194,8 +207,8 @@ void* processHeat(void* arg)
 	
 		else if (task[12])
 		{
-			printx(INFO, BUS, "Début Maintien au chaud 6");
-			heat_ok = true;
+			printx(INFO, BUS, "Début Maintien au chaud 6\n");
+			setHeatOk();
 			task[12]=false;
 			task[13]=true;
 		}
@@ -212,10 +225,10 @@ void* processHeat(void* arg)
 			if(hold_heat)
 			{
 				if( (tAct < T_HOLD_THRESH))
-				{
-					if (!pumpitup)
+				{			
+					if (!isPumpOn())
 					{
-						printx(INFO, BUS, "Début Chauffe maintien sans pompe 7");
+						printx(INFO, BUS, "Début Chauffe maintien sans pompe 7\n");
 						setHeatOn();
 						task[14] = false;
 						task[15] = true;
@@ -223,7 +236,7 @@ void* processHeat(void* arg)
 			
 					else 
 					{
-						printx(INFO, BUS, "Début Chauffe maintien avec pompe 7'");
+						printx(INFO, BUS, "Début Chauffe maintien avec pompe 7'\n");
 						setHeatOn();
 						task[14]=false;
 						task[19]=true; //Numéro de tache "T<Thold && pumpitup"
@@ -234,7 +247,7 @@ void* processHeat(void* arg)
 			
 			else
 			{
-				printx(INFO, BUS, "Maintien au chaud annulé 7 ' ' Go etape de fin");
+				printx(INFO, BUS, "Maintien au chaud annulé 7 ' ' Go etape de fin\n");
 				task[14]=false;
 				task[23]=true; //Sinon go étape d'attente fin
 			}
@@ -252,7 +265,7 @@ void* processHeat(void* arg)
 		{
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > HOLD_HEAT_TIME )
 			{
-				printx(INFO, BUS, "Fin chauffe maintien sans pompe 8");
+				printx(INFO, BUS, "Fin chauffe maintien sans pompe 8\n");
 				setHeatOff();
 				task[16] = false;
 				task[17] = true;
@@ -272,7 +285,7 @@ void* processHeat(void* arg)
 			{
 				if ( tAct < T_HOLD_THRESH)
 				{
-					printx(INFO, BUS, "Fin d'attente chauffe intermédiaire maintien 9");
+					printx(INFO, BUS, "Fin d'attente chauffe intermédiaire maintien 9\n");
 					task[18] = false;	
 					task[11] = true; //Retour au début de "Maintien au chaud" 
 				}
@@ -291,7 +304,7 @@ void* processHeat(void* arg)
 		{
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > HOLD_PUMP_HEAT_TIME )
 			{
-				printx(INFO, BUS, "Fin chauffe maintien avec pompe 10");
+				printx(INFO, BUS, "Fin chauffe maintien avec pompe 10\n");
 				setHeatOff();
 				task[20] = false;
 				task[21] = true;
@@ -311,7 +324,7 @@ void* processHeat(void* arg)
 			{
 				if ( tAct < T_HOLD_THRESH)
 				{
-					printx(INFO, BUS, "Fin d'attente chauffe intermédiaire maintien avec pompe 11");
+					printx(INFO, BUS, "Fin d'attente chauffe intermédiaire maintien avec pompe 11\n");
 					task[22] = false;
 					task[11] = true; //Retour au début de "Maintien au chaud" 
 				}			

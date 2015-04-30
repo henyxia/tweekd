@@ -14,6 +14,7 @@
 #include "printx.h"
 #include "serial.h"
 #include "heat.h"
+#include "pump.h"
 
 #define	DEVICE1				"/dev/ttyACM1"
 #define	SPEED				B19200
