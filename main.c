@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <pthread.h>
+#include <unistd.h>
 #include "printx.h"
 #include "ui.h"
 #include "nfc.h"
 #include "bus.h"
 #include "hvc.h"
 #include "heat.h"
+#include "pump.h"
 
-#include <unistd.h>
 
 int main(void)
 {
@@ -46,6 +47,7 @@ int main(void)
 	}
 	pthread_create(&tHVC, NULL, processHVC, NULL);
 	initProcessHeat();
+	initProcessPump();
 	setPumpOn();
 	processHeat(NULL);
 
