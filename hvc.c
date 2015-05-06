@@ -27,10 +27,14 @@
 #define	SET_HEAT_OFF		'G'
 #define	SET_PUMP_ON			'B'
 #define	SET_PUMP_OFF		'D'
+#define	PUMP_STATE_HIGH		'I'
+#define	GET_PUMP			'F'
 
 // Globals
 int		hvc_fd = -1;
 bool	hvcStop = false;
+int		pumped = 0;
+bool	previousPumpState;
 bool	sPump = false;
 bool	sHeat = false;
 bool	autoHeat = false;
@@ -47,6 +51,7 @@ int		tempCons;
 
 void setPumpOn()
 {
+	pumped = 0;
 	setPumpWantedState(true);
 }
 
@@ -120,13 +125,19 @@ bool initHVC()
 		return false;
 	}
 
+	sendData(&hvc_fd, GET_PUMP);
+	data = getData(&hvc_fd);
+
+	previousPumpState = data == PUMP_STATE_HIGH;
+
 	return true;
 }
 
 void* processHVC(void* we)
 {
-	uint8_t data;
-	float temp;
+	uint8_t	data;
+	bool	pumpState;
+	float	temp;
 
 	while(!hvcStop)
 	{
@@ -174,6 +185,14 @@ void* processHVC(void* we)
 			if(sPump)
 				tPumpStart = clock();
 		}
+
+		// Querying pump state
+		sendData(&hvc_fd, GET_TEMP);
+		data = getData(&hvc_fd);
+		pumpState = data == PUMP_STATE_HIGH;
+		if(pumpState ^ previousPumpState)
+			pumped++;
+		previousPumpState = pumpState;
 
 		usleep(HVC_POLLING_TIME);
 	}
