@@ -9,7 +9,6 @@
 #include "heat.h"
 #include "pump.h"
 
-
 int main(void)
 {
 	int ret;
@@ -17,6 +16,7 @@ int main(void)
 	pthread_t tNFC;
 	pthread_t tBUS;
 	pthread_t tHVC;
+	pthread_t tHeat;
 	initUILog();
 	if(!initLog())
 	{
@@ -48,8 +48,8 @@ int main(void)
 	pthread_create(&tHVC, NULL, processHVC, NULL);
 	initProcessHeat();
 	initProcessPump();
-	setPumpOn();
-	processHeat(NULL);
+	//setPumpOn();
+	pthread_create(&tHeat, NULL, processHeat, NULL);
 
 	pthread_join(tUI, NULL);
 	closeLog();
