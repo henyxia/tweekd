@@ -78,7 +78,7 @@ void* processPump(void* arg)
 		{	
 			if (coffee_wanted)
 			{
-				printx(INFO, BUS, "Demande de café prise en compte 1\n");
+				printx(INFO, PUMP, "Demande de café prise en compte 1\n");
 				taskP[0]=false;
 				taskP[1]=true;
 			}
@@ -88,14 +88,14 @@ void* processPump(void* arg)
 		{
 			if (isHeatOk())
 			{
-				printx(INFO, BUS, "Chauffe eau a bonne temperature OK 2\n");
+				printx(INFO, PUMP, "Chauffe eau a bonne temperature OK 2\n");
 				taskP[1]=false;
 				taskP[3]=true;
 			}
 			
 			else
 			{
-				printx(INFO, BUS, "Attente chauffe eau a bonne temperature 2'\n");
+				printx(INFO, PUMP, "Attente chauffe eau a bonne temperature 2'\n");
 				taskP[1]=false;
 				taskP[2]=true;
 			}
@@ -113,7 +113,7 @@ void* processPump(void* arg)
 		else if (taskP[3])
 		{
 			tTaskP = clock();
-			printx(INFO, BUS, "Distribution de l'eau Pompe ON 3\n");
+			printx(INFO, PUMP, "Distribution de l'eau Pompe ON 3\n");
 			taskP[3]=false;
 			taskP[4]=true;
 		}
@@ -125,14 +125,14 @@ void* processPump(void* arg)
 			
 			if (volDeb > volWanted)
 			{
-				printx(INFO, BUS, "Fin de Distribution de l'eau Pompe OFF 4\n");
+				printx(INFO, PUMP, "Fin de Distribution de l'eau Pompe OFF 4\n");
 				taskP[4]=false;
 				taskP[5]=true;
 			}
 				
 			else if ( ((tNowP - tTaskP) / CLOCKS_PER_SEC) > 60 )
 			{
-				printx(INFO, BUS, "Pompe utilisée depuis plus d'1 min, mise en pause 4'\n");
+				printx(INFO, PUMP, "Pompe utilisée depuis plus d'1 min, mise en pause 4'\n");
 				taskP[4]=false;
 				taskP[6]=false;
 			}
@@ -143,7 +143,7 @@ void* processPump(void* arg)
 			setPumpOff();
 			pump_on=false;
 			
-			printx(INFO, BUS, "Cafe servi 5\n");
+			printx(INFO, PUMP, "Cafe servi 5\n");
 			volWanted=0;
 			coffee_wanted=false;
 			
@@ -156,7 +156,7 @@ void* processPump(void* arg)
 			setPumpOff();
 			pump_on=false;
 			
-			printx(INFO, BUS, "En pause, Pompe OFF 6");
+			printx(INFO, PUMP, "En pause, Pompe OFF 6");
 			
 			tTaskP = clock();
 			taskP[6]=false;
@@ -167,13 +167,13 @@ void* processPump(void* arg)
 		{
 			if ( ((tNowP - tTaskP) / CLOCKS_PER_SEC) > 60 )
 			{
-				printx(INFO, BUS, "Pause terminée 7\n");
+				printx(INFO, PUMP, "Pause terminée 7\n");
 				taskP[7]=false;
 				taskP[4]=true;
 			}	
 		}	
 		
-		sleep(50);
+		usleep(20000);
 	}
 
 	return NULL;

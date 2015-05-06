@@ -17,6 +17,7 @@ int main(void)
 	pthread_t tBUS;
 	pthread_t tHVC;
 	pthread_t tHeat;
+	pthread_t tPump;
 	initUILog();
 	if(!initLog())
 	{
@@ -48,8 +49,11 @@ int main(void)
 	pthread_create(&tHVC, NULL, processHVC, NULL);
 	initProcessHeat();
 	initProcessPump();
-	//setPumpOn();
 	pthread_create(&tHeat, NULL, processHeat, NULL);
+	pthread_create(&tPump, NULL, processPump, NULL);
+
+	setVolWanted(1);
+	setCoffeeWanted();
 
 	pthread_join(tUI, NULL);
 	closeLog();

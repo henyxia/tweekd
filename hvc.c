@@ -128,7 +128,8 @@ bool initHVC()
 	sendData(&hvc_fd, GET_PUMP);
 	data = getData(&hvc_fd);
 
-	previousPumpState = data == PUMP_STATE_HIGH;
+	previousPumpState = (data == PUMP_STATE_HIGH);
+	printf("Data received from HVC for PUMP %02x\n", data);
 
 	return true;
 }
@@ -187,12 +188,14 @@ void* processHVC(void* we)
 		}
 
 		// Querying pump state
-		sendData(&hvc_fd, GET_TEMP);
+		sendData(&hvc_fd, GET_PUMP);
 		data = getData(&hvc_fd);
-		pumpState = data == PUMP_STATE_HIGH;
+		pumpState = (data == PUMP_STATE_HIGH);
+		printx(DEBUG, HVC, "PUMP %d %d Flow : %d\n", previousPumpState, pumpState, pumped);
 		if(pumpState ^ previousPumpState)
 			pumped++;
 		previousPumpState = pumpState;
+		actDeb(pumped);
 
 		usleep(HVC_POLLING_TIME);
 	}

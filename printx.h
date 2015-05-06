@@ -10,7 +10,7 @@ typedef enum
 
 typedef enum
 {
-	MAIN, UI, NFC, HVC, BUS, TEMP
+	MAIN, UI, NFC, HVC, BUS, TEMP, PUMP, HEAT
 }msgfrom;
 
 bool initLog();

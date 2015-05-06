@@ -11,9 +11,9 @@
 #define	S_RESET			"\33[0m"
 #define	MAX_BUFFER		128
 
-FILE* logfiles[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
+FILE* logfiles[8] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 char s_color[4][12] = {"\x1b[01;31m", "\x1b[01;33m", "\x1b[01;32m", "\x1b[01;36m"};
-char f_name[6][5] = {"MAIN", "UI  ", "NFC ", "HVC ", "BUS ", "TEMP"};
+char f_name[8][5] = {"MAIN", "UI  ", "NFC ", "HVC ", "BUS ", "TEMP", "PUMP", "HEAT"};
 struct timeval tv;
 
 void removeCharFromString(char c, char *str)
@@ -68,6 +68,20 @@ bool initLog()
 		return false;
 	}
 
+	logfiles[6] = fopen("log/pump.log", "a");
+	if(logfiles[6] == NULL)
+	{
+		printf("Unable to open the pump log file\n");
+		return false;
+	}
+
+	logfiles[7] = fopen("log/heat.log", "a");
+	if(logfiles[7] == NULL)
+	{
+		printf("Unable to open the heat log file\n");
+		return false;
+	}
+
 	return true;
 }
 
@@ -79,6 +93,8 @@ void closeLog()
 	fclose(logfiles[3]);
 	fclose(logfiles[4]);
 	fclose(logfiles[5]);
+	fclose(logfiles[6]);
+	fclose(logfiles[7]);
 }
 
 void printx(severity s, msgfrom from, char* str, ...)
