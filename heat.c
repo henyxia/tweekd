@@ -61,7 +61,8 @@ void resetHeatOk(void)
 
 bool isHeatOk(void)
 {
-	return (tAct > T_STEP_THRESH && tAct < T_HOLD_THRESH);
+	heat_ok = (tAct > T_HOLD_THRESH);
+	return heat_ok;
 }
 
 void* processHeat(void* arg)

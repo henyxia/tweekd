@@ -173,7 +173,7 @@ void* processPump(void* arg)
 			}	
 		}	
 		
-		usleep(20000);
+		sleep(1);
 	}
 
 	return NULL;

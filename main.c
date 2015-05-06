@@ -52,6 +52,7 @@ int main(void)
 	pthread_create(&tHeat, NULL, processHeat, NULL);
 	pthread_create(&tPump, NULL, processPump, NULL);
 
+	sleep(20);
 	setVolWanted(1);
 	setCoffeeWanted();
 

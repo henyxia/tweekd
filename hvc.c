@@ -51,12 +51,12 @@ int		tempCons;
 
 void setPumpOn()
 {
-	pumped = 0;
 	setPumpWantedState(true);
 }
 
 void setPumpOff()
 {
+	pumped = 0;
 	setPumpWantedState(false);
 }
 
@@ -142,7 +142,7 @@ void* processHVC(void* we)
 
 	while(!hvcStop)
 	{
-		printx(DEBUG, HVC, "Querying data\n");
+		printx(DEBUG, HVC, "Querying data, with prev PUMP %d\n", pumped);
 		sendData(&hvc_fd, GET_TEMP);
 		data = getData(&hvc_fd);
 		setTemp(data);
