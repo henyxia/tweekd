@@ -11,7 +11,7 @@
 #define	S_RESET			"\33[0m"
 #define	MAX_BUFFER		128
 
-FILE* logfiles[5] = {NULL, NULL, NULL, NULL, NULL};
+FILE* logfiles[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 char s_color[4][12] = {"\x1b[01;31m", "\x1b[01;33m", "\x1b[01;32m", "\x1b[01;36m"};
 char f_name[6][5] = {"MAIN", "UI  ", "NFC ", "HVC ", "BUS ", "TEMP"};
 struct timeval tv;
