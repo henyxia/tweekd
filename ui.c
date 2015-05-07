@@ -57,6 +57,8 @@ void setDebit(unsigned int d)
 
 void processScreen()
 {
+	int x = -1;
+	int y = -1;
 	if(actScreen == SC_HOME)
 	{
 		if(uid[0] == '\0')
@@ -66,6 +68,12 @@ void processScreen()
 			actScreen = SC_MAIN;
 			displayPicture("img/main.boz");
 		}
+	}
+	else if(actScreen == SC_MAIN)
+	{
+		if(screenTouched(&x, &y))
+			displayPicture("img/home.boz");
+			//displayPicture = calculateInteraction(displayPicture, x, y);
 	}
 }
 

@@ -3,5 +3,6 @@
 
 bool initUSB();
 void displayPicture(char*);
+bool screenTouched(int*, int*);
 
 #endif

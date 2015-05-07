@@ -2,14 +2,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <libusb-1.0/libusb.h>
+#include "printx.h"
 #include "usb.h"
 
-#define VENDOR_ID		0xfccf
-#define PRODUCT_ID		0xa001
-#define ENDPOINT_OUT	0x01
-#define	MAX_SIZE_OUT	64
-#define HEIGHT			240
-#define WIDTH			320
+#define VENDOR_ID			0xfccf
+#define PRODUCT_ID			0xa001
+#define ENDPOINT_OUT		0x01
+#define	ENDPOINT_IN			0x82
+#define	MAX_SIZE_OUT		64
+#define HEIGHT				240
+#define WIDTH				320
+#define	STATUS_QUERY_LENGTH	11
 
 libusb_device_handle*	screenHandle;
 unsigned char			data[MAX_SIZE_OUT];
@@ -182,4 +185,28 @@ bool initUSB(void)
 	displayPicture("img/home.boz");
 
 	return true;
+}
+
+bool screenTouched(int* x, int* y)
+{
+	unsigned char	data[STATUS_QUERY_LENGTH];
+	int				transfered;
+	libusb_interrupt_transfer(screenHandle, ENDPOINT_IN, data, STATUS_QUERY_LENGTH, &transfered, 0);
+	if(transfered != STATUS_QUERY_LENGTH)
+	{
+		printx(ERROR, UI, "Status recieved is %d bytes long, and expected %d\n", transfered, STATUS_QUERY_LENGTH);
+		return false;
+	}
+
+	//printx(DEBUG, UI, "%02X %02X %02X %02X", data[0], data[1], data[2], data[3]);
+	//printx(DEBUG, UI, "%02X %02X %02X %02X", data[4], data[5], data[6], data[7]);
+	//printx(DEBUG, UI, "%02X %02X %02X\n", data[8], data[9], data[10]);
+
+	*x = data[3] + (256 * (int)data[4]);
+
+	*y = data[7];
+
+	printx(DEBUG, UI, "Screen %s at X %d Y %d\n", data[2] == 1 ? "touched" : "untouched", *x, *y);
+
+	return data[2] == 1;
 }
