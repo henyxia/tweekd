@@ -182,7 +182,7 @@ bool initUSB(void)
 	
 	libusb_free_config_descriptor(dConfig);
 
-	displayPicture("img/home.boz");
+	displayPicture("img/home.rgb");
 
 	return true;
 }
@@ -198,12 +198,7 @@ bool screenTouched(int* x, int* y)
 		return false;
 	}
 
-	//printx(DEBUG, UI, "%02X %02X %02X %02X", data[0], data[1], data[2], data[3]);
-	//printx(DEBUG, UI, "%02X %02X %02X %02X", data[4], data[5], data[6], data[7]);
-	//printx(DEBUG, UI, "%02X %02X %02X\n", data[8], data[9], data[10]);
-
 	*x = data[3] + (256 * (int)data[4]);
-
 	*y = data[7];
 
 	printx(DEBUG, UI, "Screen %s at X %d Y %d\n", data[2] == 1 ? "touched" : "untouched", *x, *y);

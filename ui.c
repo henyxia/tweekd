@@ -5,6 +5,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <termios.h>
+#include "printx.h"
 #include "ui.h"
 #include "bus.h"
 #include "usb.h"
@@ -15,9 +16,11 @@
 #define	LOG_LENGTH			82
 #define	IPS					2
 #define	SCREEN_TIME			1000000/IPS
+#define	MAX_FILENAME_LENGTH	30
 #define	SC_HOME				0
 #define	SC_MAIN				1
-#define	SPACES				"                                                                                                                                                                                                                                                                  "
+
+
 char			started[TIME_LENGTH];
 char			uid[HEADER_TEXT_LENGTH];
 char			cmd[LOG_LENGTH];
@@ -55,6 +58,31 @@ void setDebit(unsigned int d)
 	debit = d;
 }
 
+int calculateInteraction(int act, int x, int y)
+{
+	char	filename[MAX_FILENAME_LENGTH];
+	FILE*	f = NULL;
+	switch(act)
+	{
+		case SC_HOME:
+			return act;
+		case SC_MAIN:
+			strcat(filename, "map/main.map");
+			break;
+		default:
+			return act;
+	}
+
+	f = fopen(filename, "r");
+	if(f == NULL)
+	{
+		printx(ERROR, UI, "The selected map is unopenable\n");
+		return act;
+	}
+	
+	return act;
+}
+
 void processScreen()
 {
 	int x = -1;
@@ -66,14 +94,13 @@ void processScreen()
 		else
 		{
 			actScreen = SC_MAIN;
-			displayPicture("img/main.boz");
+			displayPicture("img/main.rgb");
 		}
 	}
 	else if(actScreen == SC_MAIN)
 	{
 		if(screenTouched(&x, &y))
-			displayPicture("img/home.boz");
-			//displayPicture = calculateInteraction(displayPicture, x, y);
+			actScreen = calculateInteraction(actScreen, x, y);
 	}
 }
 
