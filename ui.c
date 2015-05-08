@@ -9,6 +9,7 @@
 #include "ui.h"
 #include "bus.h"
 #include "usb.h"
+#include "pump.h"
 
 #define	TIME_LENGTH			24
 #define	HEADER_TEXT_LENGTH	24
@@ -60,8 +61,9 @@ void setDebit(unsigned int d)
 
 int calculateInteraction(int act, int x, int y)
 {
-	char	filename[MAX_FILENAME_LENGTH];
-	FILE*	f = NULL;
+	char			filename[MAX_FILENAME_LENGTH];
+	FILE*			f = NULL;
+	unsigned char	ret;
 	switch(act)
 	{
 		case SC_HOME:
@@ -83,7 +85,19 @@ int calculateInteraction(int act, int x, int y)
 
 	fseek(f, x + y*320, SEEK_SET);
 
-	printx(DEBUG, UI, "Ret is %02X\n", fgetc(f));
+	ret = fgetc(f);
+	printx(DEBUG, UI, "Ret is %02X\n", ret);
+
+	if(ret == 1)
+	{
+		setVolWanted(1);
+		setCoffeeWanted();
+	}
+	else if(ret == 2)
+	{
+		setVolWanted(2);
+		setCoffeeWanted();
+	}
 
 	fclose(f);
 	
