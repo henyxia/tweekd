@@ -67,9 +67,10 @@ int calculateInteraction(int act, int x, int y)
 		case SC_HOME:
 			return act;
 		case SC_MAIN:
-			strcat(filename, "map/main.map");
+			strcpy(filename, "map/main.map");
 			break;
 		default:
+			printx(ERROR, UI, "Unrecognized state %d\n", act);
 			return act;
 	}
 
