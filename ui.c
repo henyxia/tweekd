@@ -80,6 +80,12 @@ int calculateInteraction(int act, int x, int y)
 		printx(ERROR, UI, "The selected map is unopenable\n");
 		return act;
 	}
+
+	fseek(f, x + y*320, SEEK_SET);
+
+	printx(DEBUG, UI, "Ret is %02X\n", fgetc(f));
+
+	fclose(f);
 	
 	return act;
 }

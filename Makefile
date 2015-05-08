@@ -28,7 +28,7 @@ $(OUTPUT): $(OBJECTS) $(MAP)
 	bmp2rgb565 $< $@
 
 %.boz: %.bmp
-	convert -flip $< $@
+	cat $< > $@
 
 %.bmpr: %.bmp
 	convert -flip $< $@
