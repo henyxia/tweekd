@@ -10,11 +10,12 @@
 #define TASK_NUMBER 32
 #define T_INIT_THRESH 40
 #define T_STEP_THRESH 80
-#define T_HOLD_THRESH 85 //OP is 88
+#define T_HOLD_THRESH 88
+#define T_ECO_MODE_THRESH 50
 #define INIT_HEAT_TIME 15
-#define INIT_WAIT_TIME 15
+#define INIT_WAIT_TIME 12
 #define STEP_HEAT_TIME 2
-#define STEP_WAIT_TIME 8 //OP is 5
+#define STEP_WAIT_TIME 6
 #define HOLD_HEAT_TIME 1
 #define HOLD_WAIT_TIME 8
 #define HOLD_PUMP_HEAT_TIME 3
@@ -70,28 +71,28 @@ void* processHeat(void* arg)
 	while(!stopHeat)
 	{
 		tNow = clock();
-		
+
 		//Chaufffe initiale
 		if (task[0])
 		{
 			printx(INFO, HEAT, "Entering in task 0\n");
 			tTask = clock();
-			
+
 			if (tAct < T_INIT_THRESH)
 			{
 				setHeatOn();
-				printx(INFO, HEAT, "DÃ©but chauffe initiale 0\n");
+				printx(INFO, HEAT, "Début chauffe initiale 0\n");
 				task[0] = false;
 				task[1] = true;
 			}
-			
+
 			else
 			{
 				task[0] = false;
 				task[6] = true;
 			}
 		}
-		
+
 		else if (task[1])
 		{
 			printx(INFO, HEAT, "Entering in task 1\n");
@@ -99,7 +100,7 @@ void* processHeat(void* arg)
 			task[1] = false;
 			task[2] = true;
 		}
-		
+
 		else if (task[2])
 		{
 			printx(INFO, HEAT, "Entering in task 2\n");
@@ -112,7 +113,7 @@ void* processHeat(void* arg)
 				task[3] = true;
 			}
 		}
-		
+
 		else if (task[3])
 		{
 			printx(INFO, HEAT, "Entering in task 3\n");
@@ -120,7 +121,7 @@ void* processHeat(void* arg)
 			task[3] = false;
 			task[4] = true;
 		}
-		
+
 		else if (task[4])
 		{
 			printx(INFO, HEAT, "Entering in task 4\n");
@@ -131,8 +132,8 @@ void* processHeat(void* arg)
 				task[5] = true;
 			}
 		}
-		
-		
+
+
 		//Chauffe par palier
 		else if (task[5])
 		{
@@ -141,26 +142,26 @@ void* processHeat(void* arg)
 			task[5] = false;
 			task[6] = true;
 		}
-		
-		
+
+
 		else if (task[6])
 		{
 			printx(INFO, HEAT, "Entering in task 6\n");
 			if (tAct < T_STEP_THRESH)
 			{
-				printx(INFO, HEAT, "DÃ©but Chauffe par palier 3\n");
+				printx(INFO, HEAT, "Début Chauffe par palier 3\n");
 				setHeatOn();
 				task[6] = false;
 				task[7] = true;
 			}
-			
+
 			else
 			{
 				task[6] = false;
-				task[11] = true; //NumÃ©ro de tache dÃ©but "Maintien au chaud"
+				task[11] = true; //Numéro de tache début "Maintien au chaud"
 			}
 		}
-		
+
 		else if (task[7])
 		{
 			printx(INFO, HEAT, "Entering in task 7\n");
@@ -168,19 +169,19 @@ void* processHeat(void* arg)
 			task[7] = false;
 			task[8] = true;
 		}
-		
+
 		else if (task[8])
 		{
 			printx(INFO, HEAT, "Entering in task 8\n");
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > STEP_HEAT_TIME )
 			{
-				printx(INFO, HEAT, "Fin de chauffe palier intermÃ©diaire 4\n");
+				printx(INFO, HEAT, "Fin de chauffe palier intermédiaire 4\n");
 				setHeatOff();
 				task[8] = false;
 				task[9] = true;
 			}
 		}
-		
+
 		else if (task[9])
 		{
 			printx(INFO, HEAT, "Entering in task 9\n");
@@ -188,20 +189,20 @@ void* processHeat(void* arg)
 			task[9] = false;
 			task[10] = true;
 		}
-		
+
 		else if (task[10])
 		{
 			printx(INFO, HEAT, "Entering in task 10\n");
 			if( ((tNow - tTask) / CLOCKS_PER_SEC) > STEP_WAIT_TIME )
 			{
-				printx(INFO, HEAT, "Fin d'attente palier intermÃ©diaire 5\n");
-				
+				printx(INFO, HEAT, "Fin d'attente palier intermédiaire 5\n");
+
 				if ( tAct < T_STEP_THRESH )
 				{
 					task[10] = false;
 					task[5] = true;
 				}
-				
+
 				else
 				{
 					task[10] = false;
@@ -209,26 +210,36 @@ void* processHeat(void* arg)
 				}
 			}
 		}
-		
-		
+
+
 		// Maintien au chaud
 		else if (task[11])
 		{
 			printx(INFO, HEAT, "Entering in task 11\n");
 			tTask = clock();
-			task[11] = false;
-			task[12] = true;
+
+			if (eco_mode)
+            {
+                task[11] = false;
+                task[24] = true; //Numéro tache Mode éco
+            }
+
+            else
+            {
+                task[11] = false;
+                task[12] = true;
+            }
 		}
-	
+
 		else if (task[12])
 		{
 			printx(INFO, HEAT, "Entering in task 12\n");
-			printx(INFO, HEAT, "DÃ©but Maintien au chaud 6\n");
+			printx(INFO, HEAT, "Début Maintien au chaud 6\n");
 			setHeatOk();
 			task[12]=false;
 			task[13]=true;
 		}
-		
+
 		else if (task[13])
 		{
 			printx(INFO, HEAT, "Entering in task 13\n");
@@ -236,41 +247,41 @@ void* processHeat(void* arg)
 			task[13] = false;
 			task[14] = true;
 		}
-		
+
 		else if (task[14])
 		{
 			printx(INFO, HEAT, "Entering in task 14\n");
 			if(hold_heat)
 			{
 				if( (tAct < T_HOLD_THRESH))
-				{			
+				{
 					if (!isPumpOn())
 					{
-						printx(INFO, HEAT, "DÃ©but Chauffe maintien sans pompe 7\n");
+						printx(INFO, HEAT, "Début Chauffe maintien sans pompe 7\n");
 						setHeatOn();
 						task[14] = false;
 						task[15] = true;
 					}
-			
-					else 
+
+					else
 					{
-						printx(INFO, HEAT, "DÃ©but Chauffe maintien avec pompe 7'\n");
+						printx(INFO, HEAT, "Début Chauffe maintien avec pompe 7'\n");
 						setHeatOn();
 						task[14]=false;
-						task[19]=true; //NumÃ©ro de tache "T<Thold && pumpitup"
+						task[19]=true; //Numéro de tache "T<Thold && pumpitup"
 					}
 				}
-			
+
 			}
-			
+
 			else
 			{
-				printx(INFO, HEAT, "Maintien au chaud annulÃ© 7 ' ' Go etape de fin\n");
+				printx(INFO, HEAT, "Maintien au chaud annulé 7 ' ' Go etape de fin\n");
 				task[14]=false;
-				task[23]=true; //Sinon go Ã©tape d'attente fin
+				task[23]=true; //Sinon go étape d'attente fin
 			}
 		}
-		
+
 		else if (task[15])
 		{
 			printx(INFO, HEAT, "Entering in task 15\n");
@@ -278,7 +289,7 @@ void* processHeat(void* arg)
 			task[15] = false;
 			task[16] = true;
 		}
-		
+
 			//Maintien au chaud sans pompage
 		else if (task[16])
 		{
@@ -291,7 +302,7 @@ void* processHeat(void* arg)
 				task[17] = true;
 			}
 		}
-		
+
 		else if (task[17])
 		{
 			printx(INFO, HEAT, "Entering in task 17\n");
@@ -299,7 +310,7 @@ void* processHeat(void* arg)
 			task[17] = false;
 			task[18] = true;
 		}
-		
+
 		else if (task[18])
 		{
 			printx(INFO, HEAT, "Entering in task 18\n");
@@ -307,13 +318,13 @@ void* processHeat(void* arg)
 			{
 				if ( tAct < T_HOLD_THRESH)
 				{
-					printx(INFO, HEAT, "Fin d'attente chauffe intermÃ©diaire maintien 9\n");
-					task[18] = false;	
-					task[11] = true; //Retour au dÃ©but de "Maintien au chaud" 
+					printx(INFO, HEAT, "Fin d'attente chauffe intermédiaire maintien 9\n");
+					task[18] = false;
+					task[11] = true; //Retour au début de "Maintien au chaud"
 				}
 			}
 		}
-		
+
 			//Maintien au chaud avec pompage
 		else if (task[19])
 		{
@@ -321,8 +332,8 @@ void* processHeat(void* arg)
 			tTask = clock();
 			task[19] = false;
 			task[20] = true;
-		}	
-			
+		}
+
 		else if (task[20])
 		{
 			printx(INFO, HEAT, "Entering in task 20\n");
@@ -334,7 +345,7 @@ void* processHeat(void* arg)
 				task[21] = true;
 			}
 		}
-		
+
 		else if (task[21])
 		{
 			printx(INFO, HEAT, "Entering in task 21\n");
@@ -342,7 +353,7 @@ void* processHeat(void* arg)
 			task[21] = false;
 			task[22] = true;
 		}
-		
+
 		else if (task[22])
 		{
 			printx(INFO, HEAT, "Entering in task 22\n");
@@ -350,37 +361,90 @@ void* processHeat(void* arg)
 			{
 				if ( tAct < T_HOLD_THRESH)
 				{
-					printx(INFO, HEAT, "Fin d'attente chauffe intermÃ©diaire maintien avec pompe 11\n");
+					printx(INFO, HEAT, "Fin d'attente chauffe intermédiaire maintien avec pompe 11\n");
 					task[22] = false;
-					task[11] = true; //Retour au dÃ©but de "Maintien au chaud" 
-				}			
+					task[5] = true; //Retour au début de "Chauffe par palier" (shuntera si temperature OK (t>T_HOLD_THRESH))
+				}
 			}
 		}
 
-			//Fin de maintien au chaud (demandÃ© par l'extÃ©rieur) et reboucle quand hold_heat est remis
+			//Fin de maintien au chaud (demandé par l'extérieur) et reboucle quand hold_heat est remis
 		else if(task[23])
 		{
 			printx(INFO, HEAT, "Entering in task 23\n");
 			setHeatOff();
-			heat_ok=false;
-			
+			resetHeatOk();
+
 			if(hold_heat)
 			{
 				task[23]=false;
-				task[0]=true; //Retour au dÃ©but
+				task[0]=true; //Retour au début
 			}
 		}
-		
-		
-		//Mode Ã©conomie d'Ã©nergie
+
+
+		//Mode économie d'énergie
 		else if(task[24])
 		{
-				//task[]=false;
-				//task[]=true;
+		    printx(INFO, HEAT, "Entering in task 24\n");
+		    printx(INFO, HEAT, "Début Mode Eco maintien 24\n");
+
+			if (eco_mode)
+            {
+                if (tAct < T_ECO_MODE_THRESH)
+                {
+                    printx(INFO, HEAT, "Debut chauffe maintien Eco Mode 25\n");
+                    setHeatOn();
+                    task[24] = false;
+                    task[25] = true;
+                }
+            }
+
+            else
+            {
+                task[24] = false;
+                task[5] = true; //Retour "Chauffe par palier"
+            }
 		}
+
+		else if (task[25])
+		{
+			tTask = clock();
+			task[25] = false;
+			task[26] = true;
+		}
+
+        else if (task[26])
+		{
+			if( ((tNow - tTask) / CLOCKS_PER_SEC) > HOLD_HEAT_TIME )
+			{
+				printx(INFO, HEAT, "Fin chauffe maintien Eco mode 27\n");
+				setHeatOff();
+				task[26] = false;
+				task[27] = true;
+			}
+		}
+
+		else if (task[27])
+		{
+			tTask = clock();
+			task[27] = false;
+			task[28] = true;
+		}
+
+		else if (task[28])
+		{
+			if( ((tNow - tTask) / CLOCKS_PER_SEC) > HOLD_WAIT_TIME )
+			{
+					printx(INFO, HEAT, "Fin d'attente maintien Eco mode 29\n");
+					task[28] = false;
+					task[24] = true;
+            }
+        }
+
 		usleep(20000);
-	}
-	
-	
+    }
+
+
 	return NULL;
 }
